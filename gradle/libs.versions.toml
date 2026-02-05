@@ -17,6 +17,8 @@ okhttp = "4.12.0"
 coil = "2.6.0"
 kotlinxSerialization = "1.6.3"
 ksp = "1.9.22-1.0.17"
+jsoup = "1.17.2"
+generativeai = "0.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 material = { group = "com.google.android.material", name = "material", version = "1.11.0" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

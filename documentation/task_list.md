@@ -75,7 +75,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Implement a Dialog or BottomSheet for URL input.
     - [x] Add URL validation logic.
     - [x] Add "Get Recipe" button that triggers the pipeline upon validation.
-- [ ] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
+- [x] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
 - [ ] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
 - [ ] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
 - [ ] Implement error handling and loading states for the import process (P0).

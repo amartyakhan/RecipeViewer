@@ -3,6 +3,7 @@ package com.example.recipeviewer.data.repository
 import com.example.recipeviewer.data.local.dao.RecipeDao
 import com.example.recipeviewer.data.mapper.toDomain
 import com.example.recipeviewer.data.mapper.toEntity
+import com.example.recipeviewer.data.remote.RecipeScraper
 import com.example.recipeviewer.domain.model.Recipe
 import com.example.recipeviewer.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(
-    private val recipeDao: RecipeDao
+    private val recipeDao: RecipeDao,
+    private val recipeScraper: RecipeScraper
 ) : RecipeRepository {
 
     override fun getAllRecipes(): Flow<List<Recipe>> {
@@ -37,5 +39,9 @@ class RecipeRepositoryImpl @Inject constructor(
 
     override suspend fun deleteRecipe(recipe: Recipe) {
         recipeDao.deleteRecipe(recipe.toEntity())
+    }
+
+    override suspend fun scrapeRecipeText(url: String): Result<String> {
+        return recipeScraper.scrapeText(url)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.recipeviewer.ui.recipe_list
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.recipeviewer.domain.model.Recipe
-import android.util.Patterns
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +30,16 @@ fun RecipeListScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    LaunchedEffect(viewModel.scrapeResult) {
+        viewModel.scrapeResult.collectLatest { result ->
+            result.onSuccess { text ->
+                Toast.makeText(context, "Extracted text: ${text.take(100)}...", Toast.LENGTH_LONG).show()
+            }.onFailure { error ->
+                Toast.makeText(context, "Failed to scrape: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +98,7 @@ fun RecipeListScreen(
                 onDismiss = { showAddDialog = false },
                 onGetRecipe = { url ->
                     showAddDialog = false
-                    Toast.makeText(context, "Successfully added recipe", Toast.LENGTH_SHORT).show()
+                    viewModel.onGetRecipe(url)
                 }
             )
         }

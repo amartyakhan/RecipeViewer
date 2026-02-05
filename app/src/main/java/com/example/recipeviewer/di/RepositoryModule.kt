@@ -1,5 +1,7 @@
 package com.example.recipeviewer.di
 
+import com.example.recipeviewer.data.remote.JsoupRecipeScraper
+import com.example.recipeviewer.data.remote.RecipeScraper
 import com.example.recipeviewer.data.repository.RecipeRepositoryImpl
 import com.example.recipeviewer.domain.repository.RecipeRepository
 import dagger.Binds
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindRecipeRepository(
         recipeRepositoryImpl: RecipeRepositoryImpl
     ): RecipeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRecipeScraper(
+        jsoupRecipeScraper: JsoupRecipeScraper
+    ): RecipeScraper
 }

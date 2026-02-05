@@ -11,4 +11,5 @@ interface RecipeRepository {
         stepIngredientMappings: List<Pair<Int, Int>> = emptyList()
     )
     suspend fun deleteRecipe(recipe: Recipe)
+    suspend fun scrapeRecipeText(url: String): Result<String>
 }
