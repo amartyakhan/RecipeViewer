@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeviewer.domain.model.Recipe
 import com.example.recipeviewer.domain.use_case.GetRecipeByIdUseCase
+import com.example.recipeviewer.domain.use_case.ScaleIngredientsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -12,10 +13,12 @@ import javax.inject.Inject
 @HiltViewModel
 class CookModeViewModel @Inject constructor(
     private val getRecipeByIdUseCase: GetRecipeByIdUseCase,
+    private val scaleIngredientsUseCase: ScaleIngredientsUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val recipeId: Long = checkNotNull(savedStateHandle["recipeId"])
+    private val multiplier: Float = savedStateHandle.get<Float>("multiplier") ?: 1.0f
 
     private val _recipe = getRecipeByIdUseCase(recipeId)
 
@@ -23,7 +26,8 @@ class CookModeViewModel @Inject constructor(
         if (recipe == null) {
             CookModeUiState.Error("Recipe not found")
         } else {
-            CookModeUiState.Success(recipe)
+            val scaledRecipe = scaleIngredientsUseCase(recipe, multiplier)
+            CookModeUiState.Success(scaledRecipe)
         }
     }.stateIn(
         scope = viewModelScope,

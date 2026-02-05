@@ -56,14 +56,14 @@ This document outlines the functional and non-functional requirements for the Re
         *   Tap to move forward to the next step (optional).
     *   **Content per step:**
         *   One instruction step.
-        *   Specific ingredients and quantities for that step.
+        *   **Exact quantities** of specific ingredients used in that step (dynamically scaled).
         *   Time duration for that specific step.
 *   **P1:** Simple visual timer for steps with a duration.
 *   **P2:** Notification/Alarm when the timer ends.
 
 ### 2.4 Ingredient Scaling & Servings
 *   **P0:** Support for scaling servings with fixed multipliers: 0.5x (1/2), 1x, 2x, and 4x.
-*   **P0:** Apply simple mathematical scaling logic to ingredient quantities.
+*   **P0:** Apply simple mathematical scaling logic to ingredient quantities in both the Overview and Cook Mode screens.
 *   **P1:** "Main Ingredient" scaling: Users can specify the exact quantity of the primary ingredient they have (e.g., 750g of chicken), and the app will proportionally scale all other ingredients.
 
 ### 2.5 Navigation & App Structure

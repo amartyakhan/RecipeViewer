@@ -39,12 +39,14 @@ data class Recipe(
 )
 
 data class Ingredient(
+    val id: Long = 0,
     val name: String,
     val quantity: Double,
     val unit: String
 )
 
 data class Step(
+    val id: Long = 0,
     val order: Int,
     val instruction: String,
     val stepIngredients: List<Ingredient>,
@@ -53,10 +55,13 @@ data class Step(
 ```
 
 ## 5. Database Design (Room)
-The database will consist of three main tables:
-1.  **RecipesTable**: Basic info (title, image, times).
-2.  **IngredientsTable**: Foreign key to Recipe ID.
-3.  **StepsTable**: Foreign key to Recipe ID, includes order and instruction.
+The database will consist of the following tables:
+1.  **RecipesTable**: Basic info (title, image, times, servings).
+2.  **IngredientsTable**: List of all ingredients for a recipe. Foreign key to Recipe ID.
+3.  **StepsTable**: List of cooking steps. Foreign key to Recipe ID.
+4.  **StepIngredientsTable**: A junction table linking Steps and Ingredients to specify which ingredients (and their exact quantities) are used in which step.
+    *   `stepId`: Foreign key to StepsTable.
+    *   `ingredientId`: Foreign key to IngredientsTable.
 
 ## 6. Component Design
 
@@ -73,26 +78,28 @@ The database will consist of three main tables:
 *   Implemented using a `HorizontalPager` for swipe gestures and step navigation.
 *   **Keep Screen On:** Uses `LocalView.current.keepScreenOn = true` while the Composable is active.
 *   **Bottom Navigation:**
-    *   Uses a `BottomAppBar` or a simple `Row` at the bottom of the screen.
-    *   Contains "Previous" and "Next" `FilledTonalButton` or `IconButton` components.
-    *   Buttons use `Icons.AutoMirrored.Filled.ArrowBack` and `Icons.AutoMirrored.Filled.ArrowForward`.
-    *   Buttons are enabled/disabled based on the current page index in `pagerState`.
-*   Displays specific ingredients and duration for the current step.
+    *   Contains "Previous" and "Next" buttons at the bottom.
+    *   Buttons are enabled/disabled based on the current page index.
+*   **Step Content:**
+    *   Displays the instruction text for the current step.
+    *   Displays a list of **exact ingredients and quantities** required for the current step, dynamically scaled based on the selected multiplier.
+    *   Displays the duration for the step if available.
 
 ### 6.4 URL Import
 *   A dialog or dedicated screen to paste a URL.
 *   Calls the Gemini-powered proxy endpoint.
-*   Parses the JSON response into a `Recipe` object and saves it to Room.
+*   The proxy is expected to return structured data mapping ingredients to specific steps.
+*   Parses the JSON response into the `Recipe` domain model and saves it to Room, including the step-ingredient relationships.
 
 ## 7. Key Features Implementation Details
 
 ### 7.1 Ingredient Scaling
-Scaling logic resides in the ViewModel or a Use Case:
+Scaling logic resides in the `ScaleIngredientsUseCase`:
 `scaledQuantity = originalQuantity * multiplier`
-The UI observes a `StateFlow` of the recipe which is updated when the multiplier changes.
+This scaling is applied to both the main ingredient list in the Detail Screen and the step-specific ingredient lists in Cook Mode.
 
 ### 7.2 Preloaded Data
-On the first app launch (checked via DataStore or a database empty check), the app will populate the Room database with the three P0 recipes (Pancakes, Spaghetti, Cookies).
+The app populates the Room database with three P0 recipes. The `PreloadData` will be updated to include the mapping of ingredients to their respective steps.
 
 ### 7.3 Material You & Dynamic Coloring
 The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+) to adapt to the user's wallpaper.
@@ -100,8 +107,8 @@ The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+
 ## 8. API Integration
 **Endpoint:** `POST /parse-recipe`
 **Request:** `{ "url": "string" }`
-**Response:** JSON representing the recipe schema (matching the Domain Model).
+**Response:** JSON representing the recipe schema, including `stepIngredients` for each step.
 
 ## 9. Error Handling
 *   Repository layer will catch network and database exceptions and wrap them in a `Result` or `Resource` class.
-*   UI will display user-friendly Toast messages or SnackBar for failures (e.g., "Failed to add recipe").
+*   UI will display user-friendly Toast messages or SnackBar for failures.

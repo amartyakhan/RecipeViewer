@@ -15,8 +15,8 @@ sealed class Screen(val route: String) {
     object RecipeDetail : Screen("recipe_detail/{recipeId}") {
         fun createRoute(recipeId: Long) = "recipe_detail/$recipeId"
     }
-    object CookMode : Screen("cook_mode/{recipeId}") {
-        fun createRoute(recipeId: Long) = "cook_mode/$recipeId"
+    object CookMode : Screen("cook_mode/{recipeId}/{multiplier}") {
+        fun createRoute(recipeId: Long, multiplier: Float) = "cook_mode/$recipeId/$multiplier"
     }
 }
 
@@ -38,15 +38,18 @@ fun RecipeNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
         ) {
             RecipeDetailScreen(
-                onStartCooking = { recipeId ->
-                    navController.navigate(Screen.CookMode.createRoute(recipeId))
+                onStartCooking = { recipeId, multiplier ->
+                    navController.navigate(Screen.CookMode.createRoute(recipeId, multiplier))
                 },
                 onBack = { navController.popBackStack() }
             )
         }
         composable(
             route = Screen.CookMode.route,
-            arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
+            arguments = listOf(
+                navArgument("recipeId") { type = NavType.LongType },
+                navArgument("multiplier") { type = NavType.FloatType }
+            )
         ) {
             CookModeScreen(
                 onClose = { navController.popBackStack() }

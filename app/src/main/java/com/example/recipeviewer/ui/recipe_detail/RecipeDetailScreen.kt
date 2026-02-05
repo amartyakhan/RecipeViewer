@@ -20,7 +20,7 @@ import com.example.recipeviewer.domain.model.Recipe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailScreen(
-    onStartCooking: (Long) -> Unit,
+    onStartCooking: (Long, Float) -> Unit,
     onBack: () -> Unit,
     viewModel: RecipeDetailViewModel = hiltViewModel()
 ) {
@@ -57,7 +57,10 @@ fun RecipeDetailScreen(
         floatingActionButton = {
             if (uiState is RecipeDetailUiState.Success) {
                 ExtendedFloatingActionButton(
-                    onClick = { onStartCooking((uiState as RecipeDetailUiState.Success).recipe.id) },
+                    onClick = { 
+                        val recipe = (uiState as RecipeDetailUiState.Success).recipe
+                        onStartCooking(recipe.id, multiplier) 
+                    },
                     icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
                     text = { Text("Start Cooking") }
                 )

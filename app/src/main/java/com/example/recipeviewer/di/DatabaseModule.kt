@@ -1,6 +1,7 @@
 package com.example.recipeviewer.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -33,16 +34,28 @@ object DatabaseModule {
             context,
             RecipeDatabase::class.java,
             "recipe_db"
-        ).addCallback(
+        ).fallbackToDestructiveMigration()
+        .addCallback(
             object : RoomDatabase.Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    super.onCreate(db)
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    super.onOpen(db)
                     CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
                         val dao = recipeDaoProvider.get()
-                        PreloadData.recipes.forEach { recipe ->
-                            val ingredients = PreloadData.ingredients.filter { it.recipeId == recipe.id }
-                            val steps = PreloadData.steps.filter { it.recipeId == recipe.id }
-                            dao.insertFullRecipe(recipe, ingredients, steps)
+                        try {
+                            val count = dao.getRecipeCount()
+                            Log.d("DatabaseModule", "Current recipe count: $count")
+                            if (count == 0) {
+                                Log.d("DatabaseModule", "Populating database with preloaded data...")
+                                PreloadData.recipes.forEach { recipe ->
+                                    val ingredients = PreloadData.ingredients.filter { it.recipeId == recipe.id }
+                                    val steps = PreloadData.steps.filter { it.recipeId == recipe.id }
+                                    val mappings = PreloadData.stepIngredientMappings[recipe.id] ?: emptyList()
+                                    dao.insertFullRecipe(recipe, ingredients, steps, mappings)
+                                }
+                                Log.d("DatabaseModule", "Database population complete.")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("DatabaseModule", "Error populating database", e)
                         }
                     }
                 }

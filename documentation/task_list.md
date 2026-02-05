@@ -19,8 +19,10 @@ This document tracks the progress of P0 requirements implementation for the Reci
     - [x] `RecipeEntity`
     - [x] `IngredientEntity` (Foreign key to Recipe)
     - [x] `StepEntity` (Foreign key to Recipe)
+    - [ ] `StepIngredientEntity` (Junction table for step-specific ingredients)
 - [x] Create Room DAOs for CRUD operations:
     - [x] Insert recipe with ingredients and steps (Transaction).
+    - [ ] Support inserting and querying step-ingredient relationships.
     - [x] Query all recipes for list view.
     - [x] Query full recipe details by ID.
     - [x] Delete recipe.
@@ -60,13 +62,13 @@ This document tracks the progress of P0 requirements implementation for the Reci
 - [x] Implement `CookModeViewModel`.
 - [x] Create `CookModeScreen` Composable:
     - [x] `HorizontalPager` for step-by-step navigation.
-    - [x] Step content: Instruction text, scaled ingredients for step, timer/duration display.
+    - [ ] Update `StepPage` to display specific ingredients for each step, dynamically scaled.
     - [x] Add explicit "Previous" and "Next" navigation buttons at the bottom using Material 3 styles.
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 
 ## 7. URL Import Feature (Gemini Proxy)
 - [ ] Define Retrofit API interface for parsing endpoint.
-- [ ] Implement Repository logic to call the proxy and map response to Domain/Entity models.
+- [ ] Implement Repository logic to call the proxy and map response to include step-ingredient relationships.
 - [ ] Create "Add Recipe" UI (Dialog or simple input field in List Screen).
 - [ ] Implement error handling and loading states for the import process.
 
@@ -75,6 +77,7 @@ This document tracks the progress of P0 requirements implementation for the Reci
     - [x] Fluffy Pancakes
     - [x] Spaghetti Bolognese
     - [x] Chocolate Chip Cookies
+- [ ] Map preloaded ingredients to their respective steps in `PreloadData`.
 - [x] Implement logic to prepopulate the Room database on first app launch.
 - [x] Verify image loading for preloaded recipes (using bundled assets or URLs).
 

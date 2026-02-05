@@ -11,8 +11,9 @@ data class RecipeWithDetails(
     )
     val ingredients: List<IngredientEntity>,
     @Relation(
+        entity = StepEntity::class,
         parentColumn = "id",
         entityColumn = "recipeId"
     )
-    val steps: List<StepEntity>
+    val steps: List<StepWithIngredients>
 )

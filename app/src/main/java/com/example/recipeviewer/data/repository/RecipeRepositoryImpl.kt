@@ -23,11 +23,15 @@ class RecipeRepositoryImpl @Inject constructor(
         return recipeDao.getRecipeById(id).map { it?.toDomain() }
     }
 
-    override suspend fun insertRecipe(recipe: Recipe) {
+    override suspend fun insertRecipe(
+        recipe: Recipe,
+        stepIngredientMappings: List<Pair<Int, Int>>
+    ) {
         recipeDao.insertFullRecipe(
             recipe = recipe.toEntity(),
             ingredients = recipe.ingredients.map { it.toEntity(recipe.id) },
-            steps = recipe.steps.map { it.toEntity(recipe.id) }
+            steps = recipe.steps.map { it.toEntity(recipe.id) },
+            stepIngredientMappings = stepIngredientMappings
         )
     }
 

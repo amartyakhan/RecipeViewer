@@ -4,6 +4,7 @@ import com.example.recipeviewer.data.local.model.IngredientEntity
 import com.example.recipeviewer.data.local.model.RecipeEntity
 import com.example.recipeviewer.data.local.model.RecipeWithDetails
 import com.example.recipeviewer.data.local.model.StepEntity
+import com.example.recipeviewer.data.local.model.StepWithIngredients
 import com.example.recipeviewer.domain.model.Ingredient
 import com.example.recipeviewer.domain.model.Recipe
 import com.example.recipeviewer.domain.model.Step
@@ -17,28 +18,26 @@ fun RecipeWithDetails.toDomain(): Recipe {
         cookTimeMinutes = recipe.cookTimeMinutes,
         servings = recipe.servings,
         ingredients = ingredients.map { it.toDomain() },
-        steps = steps.sortedBy { it.order }.map { it.toDomain(ingredients) }
+        steps = steps.sortedBy { it.step.order }.map { it.toDomain() }
     )
 }
 
 fun IngredientEntity.toDomain(): Ingredient {
     return Ingredient(
+        id = id,
         name = name,
         quantity = quantity,
         unit = unit
     )
 }
 
-fun StepEntity.toDomain(allIngredients: List<IngredientEntity>): Step {
-    // In a real app, you might have a many-to-many relationship between steps and ingredients.
-    // For this P0, we'll assume the domain model's stepIngredients can be derived or simplified.
-    // If the design doc implies specific ingredients per step, the schema might need adjusting,
-    // but for now, we'll keep it simple as per the current schema.
+fun StepWithIngredients.toDomain(): Step {
     return Step(
-        order = order,
-        instruction = instruction,
-        stepIngredients = emptyList(), // Simplified for now as per schema
-        durationMinutes = durationMinutes
+        id = step.id,
+        order = step.order,
+        instruction = step.instruction,
+        stepIngredients = ingredients.map { it.toDomain() },
+        durationMinutes = step.durationMinutes
     )
 }
 
@@ -55,6 +54,7 @@ fun Recipe.toEntity(): RecipeEntity {
 
 fun Ingredient.toEntity(recipeId: Long): IngredientEntity {
     return IngredientEntity(
+        id = id,
         recipeId = recipeId,
         name = name,
         quantity = quantity,
@@ -64,6 +64,7 @@ fun Ingredient.toEntity(recipeId: Long): IngredientEntity {
 
 fun Step.toEntity(recipeId: Long): StepEntity {
     return StepEntity(
+        id = id,
         recipeId = recipeId,
         order = order,
         instruction = instruction,
