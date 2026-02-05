@@ -31,12 +31,12 @@ fun RecipeListScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(viewModel.scrapeResult) {
-        viewModel.scrapeResult.collectLatest { result ->
-            result.onSuccess { text ->
-                Toast.makeText(context, "Extracted text: ${text.take(100)}...", Toast.LENGTH_LONG).show()
+    LaunchedEffect(viewModel.extractionResult) {
+        viewModel.extractionResult.collectLatest { result ->
+            result.onSuccess { json ->
+                Toast.makeText(context, "Gemini JSON: ${json.take(200)}...", Toast.LENGTH_LONG).show()
             }.onFailure { error ->
-                Toast.makeText(context, "Failed to scrape: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Extraction failed: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -12,4 +12,5 @@ interface RecipeRepository {
     )
     suspend fun deleteRecipe(recipe: Recipe)
     suspend fun scrapeRecipeText(url: String): Result<String>
+    suspend fun extractRecipe(scrapedText: String): Result<String>
 }

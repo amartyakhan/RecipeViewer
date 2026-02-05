@@ -16,8 +16,8 @@ class RecipeListViewModel @Inject constructor(
     private val recipeRepository: RecipeRepository
 ) : ViewModel() {
 
-    private val _scrapeResult = MutableSharedFlow<Result<String>>()
-    val scrapeResult = _scrapeResult.asSharedFlow()
+    private val _extractionResult = MutableSharedFlow<Result<String>>()
+    val extractionResult = _extractionResult.asSharedFlow()
 
     val uiState: StateFlow<RecipeListUiState> = getRecipesUseCase()
         .map { recipes ->
@@ -31,8 +31,13 @@ class RecipeListViewModel @Inject constructor(
 
     fun onGetRecipe(url: String) {
         viewModelScope.launch {
-            val result = recipeRepository.scrapeRecipeText(url)
-            _scrapeResult.emit(result)
+            val scrapeResult = recipeRepository.scrapeRecipeText(url)
+            scrapeResult.onSuccess { text ->
+                val extractionResult = recipeRepository.extractRecipe(text)
+                _extractionResult.emit(extractionResult)
+            }.onFailure { error ->
+                _extractionResult.emit(Result.failure(error))
+            }
         }
     }
 }
