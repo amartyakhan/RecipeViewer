@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.recipeviewer.ui.recipe_list.RecipeListScreen
 import com.example.recipeviewer.ui.recipe_detail.RecipeDetailScreen
+import com.example.recipeviewer.ui.cook_mode.CookModeScreen
 
 sealed class Screen(val route: String) {
     object RecipeList : Screen("recipe_list")
@@ -37,8 +38,8 @@ fun RecipeNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
         ) {
             RecipeDetailScreen(
-                onStartCooking = { recipeId -> 
-                    navController.navigate(Screen.CookMode.createRoute(recipeId)) 
+                onStartCooking = { recipeId ->
+                    navController.navigate(Screen.CookMode.createRoute(recipeId))
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -47,7 +48,9 @@ fun RecipeNavGraph(navController: NavHostController) {
             route = Screen.CookMode.route,
             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
         ) {
-            // TODO: CookModeScreen(onClose = { navController.popBackStack() })
+            CookModeScreen(
+                onClose = { navController.popBackStack() }
+            )
         }
     }
 }

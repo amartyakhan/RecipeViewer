@@ -47,22 +47,21 @@ This document tracks the progress of P0 requirements implementation for the Reci
 - [x] Handle navigation to Recipe Overview.
 
 ## 5. Recipe Overview & Scaling Feature
-- [ ] Implement `RecipeDetailViewModel`.
-- [ ] Create `RecipeDetailScreen` Composable:
-    - [ ] Recipe header (Image, Title).
-    - [ ] Ingredient list with scaling support.
-    - [ ] Scaling selector (0.5x, 1x, 2x, 4x).
-    - [ ] Instructions list.
-    - [ ] "Start Cooking" Floating Action Button.
-    - [ ] Delete option (Menu or Button).
+- [x] Implement `RecipeDetailViewModel`.
+- [x] Create `RecipeDetailScreen` Composable:
+    - [x] Recipe header (Image, Title).
+    - [x] Ingredient list with scaling support.
+    - [x] Scaling selector (0.5x, 1x, 2x, 4x).
+    - [x] Instructions list.
+    - [x] "Start Cooking" Floating Action Button.
+    - [x] Delete option (Menu or Button).
 
 ## 6. Cook Mode (Slideshow) Feature
-- [ ] Implement `CookModeViewModel`.
-- [ ] Create `CookModeScreen` Composable:
-    - [ ] `HorizontalPager` for step-by-step navigation.
-    - [ ] Step content: Instruction text, scaled ingredients for step, timer/duration display.
-    - [ ] Navigation controls: Previous/Next buttons, swipe support, tap-to-advance.
-- [ ] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
+- [x] Implement `CookModeViewModel`.
+- [x] Create `CookModeScreen` Composable:
+    - [x] `HorizontalPager` for step-by-step navigation.
+    - [x] Step content: Instruction text, scaled ingredients for step, timer/duration display.
+- [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 
 ## 7. URL Import Feature (Gemini Proxy)
 - [ ] Define Retrofit API interface for parsing endpoint.

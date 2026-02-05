@@ -1,0 +1,147 @@
+package com.example.recipeviewer.ui.cook_mode
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.recipeviewer.domain.model.Recipe
+import com.example.recipeviewer.domain.model.Step
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun CookModeScreen(
+    onClose: () -> Unit,
+    viewModel: CookModeViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Keep screen on while in Cook Mode
+    val view = LocalView.current
+    DisposableEffect(view) {
+        view.keepScreenOn = true
+        onDispose {
+            view.keepScreenOn = false
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    val title = (uiState as? CookModeUiState.Success)?.recipe?.title ?: "Cook Mode"
+                    Text(title)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.Close, contentDescription = "Close")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = uiState) {
+                is CookModeUiState.Loading -> CircularProgressIndicator()
+                is CookModeUiState.Error -> Text(state.message)
+                is CookModeUiState.Success -> {
+                    CookModeContent(recipe = state.recipe)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CookModeContent(recipe: Recipe) {
+    val pagerState = rememberPagerState(pageCount = { recipe.steps.size })
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = { (pagerState.currentPage + 1).toFloat() / recipe.steps.size },
+            modifier = Modifier.fillMaxWidth()
+        )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.Top
+        ) { pageIndex ->
+            StepPage(step = recipe.steps[pageIndex])
+        }
+    }
+}
+
+@Composable
+private fun StepPage(step: Step) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = "Step ${step.order}",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = step.instruction,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Medium
+        )
+
+        if (step.stepIngredients.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Ingredients for this step:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            step.stepIngredients.forEach { ingredient ->
+                Text(
+                    text = "• ${ingredient.quantity} ${ingredient.unit} ${ingredient.name}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+        }
+
+        step.durationMinutes?.let { duration ->
+            Spacer(modifier = Modifier.height(32.dp))
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Timer: $duration min",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+        }
+    }
+}
