@@ -37,8 +37,8 @@ fun RecipeNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
         ) {
             RecipeDetailScreen(
-                onStartCooking = { recipeId ->
-                    navController.navigate(Screen.CookMode.createRoute(recipeId))
+                onStartCooking = { recipeId -> 
+                    navController.navigate(Screen.CookMode.createRoute(recipeId)) 
                 },
                 onBack = { navController.popBackStack() }
             )
