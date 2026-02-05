@@ -9,7 +9,7 @@ The application will follow **Clean Architecture** principles and the **MVVM (Mo
 ### 2.1 Layers
 *   **UI Layer (Compose):** Contains ViewModels and Composable functions.
 *   **Domain Layer:** Contains Use Cases and Domain Models (Business Logic).
-*   **Data Layer:** Contains Repositories, Data Sources (Room, Retrofit), and Data Mappers.
+*   **Data Layer:** Contains Repositories, Data Sources (Room, Gemini AI SDK), and Data Mappers.
 
 ## 3. Technology Stack
 *   **Language:** Kotlin
@@ -17,7 +17,9 @@ The application will follow **Clean Architecture** principles and the **MVVM (Mo
 *   **UI Framework:** Jetpack Compose
 *   **Design System:** Material 3 (Material You) with Dynamic Coloring
 *   **Database:** Room (SQLite)
-*   **Networking:** Retrofit with OkHttp (for Gemini Proxy API)
+*   **Extraction Engine:** Google AI Client SDK (`com.google.ai.client.generativeai`) for direct communication with Gemini Pro/Flash.
+*   **HTML Parsing:** Jsoup (for pre-processing URLs to extract text content).
+*   **Security:** Secrets Gradle Plugin (to manage Gemini API keys in `local.properties`).
 *   **Dependency Injection:** Hilt
 *   **Asynchronous Programming:** Kotlin Coroutines & Flow
 *   **Image Loading:** Coil
@@ -68,13 +70,21 @@ The database will consist of the following tables:
 ### 6.1 Recipe List Screen
 *   Uses a `LazyColumn` to display recipe cards.
 *   Each card displays the title, image, total time, and an ingredient summary.
+*   A Floating Action Button (FAB) (P0) initiates the "Add Recipe by URL" flow.
 
-### 6.2 Recipe Detail Screen
+### 6.2 Add Recipe Dialog (P0)
+*   Opens when the user clicks the FAB.
+*   Contains a `TextField` for the user to paste the recipe URL.
+*   Validates the input to ensure it is a well-formed URL.
+*   A "Get Recipe" button is enabled only when a valid URL is present.
+*   Clicking the button triggers the `AddRecipeFromUrlUseCase`.
+
+### 6.3 Recipe Detail Screen
 *   Displays the full list of ingredients and steps.
 *   Includes a "Start Cooking" FAB or button.
 *   Provides a Scaling Selector (0.5x, 1x, 2x, 4x) which triggers UI updates via the ViewModel.
 
-### 6.3 Cook Mode (Slideshow)
+### 6.4 Cook Mode (Slideshow)
 *   Implemented using a `HorizontalPager` for swipe gestures and step navigation.
 *   **Keep Screen On:** Uses `LocalView.current.keepScreenOn = true` while the Composable is active.
 *   **Bottom Navigation:**
@@ -85,11 +95,14 @@ The database will consist of the following tables:
     *   Displays a list of **exact ingredients and quantities** required for the current step, dynamically scaled based on the selected multiplier.
     *   Displays the duration for the step if available.
 
-### 6.4 URL Import
-*   A dialog or dedicated screen to paste a URL.
-*   Calls the Gemini-powered proxy endpoint.
-*   The proxy is expected to return structured data mapping ingredients to specific steps.
-*   Parses the JSON response into the `Recipe` domain model and saves it to Room, including the step-ingredient relationships.
+### 6.5 URL Import Pipeline
+1.  **Input:** 
+    *   **Manual Entry (P0):** The feature is triggered by manual URL entry in the "Add Recipe Dialog".
+    *   **Share Sheet (P1):** Integration with Android's Share Sheet via an `intent-filter` in `AndroidManifest.xml` for `ACTION_SEND`.
+2.  **Scraping:** Uses Jsoup to extract text content from the `<article>` or `<body>` tag of the URL.
+3.  **Extraction:** Sends the extracted text to Gemini via the Google AI Client SDK.
+4.  **Structured Output:** The Generative Model is configured with `responseMimeType = "application/json"` to ensure a parseable JSON response.
+5.  **Persistence:** The JSON is parsed into the `Recipe` domain model and saves it to Room.
 
 ## 7. Key Features Implementation Details
 
@@ -104,11 +117,11 @@ The app populates the Room database with three P0 recipes. The `PreloadData` wil
 ### 7.3 Material You & Dynamic Coloring
 The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+) to adapt to the user's wallpaper.
 
-## 8. API Integration
-**Endpoint:** `POST /parse-recipe`
-**Request:** `{ "url": "string" }`
-**Response:** JSON representing the recipe schema, including `stepIngredients` for each step.
+## 8. Gemini Integration
+*   **Model:** Gemini 1.5 Flash (optimized for speed and structured output).
+*   **Prompting:** Strict system instructions to return JSON matching the app's internal schema.
+*   **API Key Management:** API key is retrieved via `BuildConfig` (populated by Secrets Gradle Plugin).
 
 ## 9. Error Handling
-*   Repository layer will catch network and database exceptions and wrap them in a `Result` or `Resource` class.
-*   UI will display user-friendly Toast messages or SnackBar for failures.
+*   Repository layer will catch network, AI SDK, and database exceptions and wrap them in a `Result` or `Resource` class.
+*   UI will display user-friendly Toast messages or SnackBar for failures (e.g., "Invalid URL", "Failed to parse recipe").

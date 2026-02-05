@@ -9,14 +9,18 @@ This document outlines the functional and non-functional requirements for the Re
     1.  **Fluffy Pancakes** (Breakfast)
     2.  **Spaghetti Bolognese** (Main Dish)
     3.  **Chocolate Chip Cookies** (Dessert)
-*   **P0:** Users can add new recipes by providing a **recipe URL** (manually pasted into the app).
-    *   The app calls a **Server-Side Proxy endpoint** that wraps a Gemini LLM call to parse the URL.
-    *   The API returns structured recipe data compatible with the app's schema.
-    *   The app stores the parsed recipe in the local database.
+*   **P0:** Users can add new recipes by manually providing a **recipe URL**.
+    *   **Manual Entry (P0):** 
+        *   A Floating Action Button (FAB) on the home screen allows users to add a new recipe.
+        *   Clicking the FAB opens a text input field for the URL.
+        *   If a valid URL is entered, a "Get Recipe" button becomes available.
+        *   Clicking "Get Recipe" triggers the extraction pipeline.
+    *   **Extraction:** The app uses the **Google AI Client SDK for Android** to call a cloud-based Gemini model (e.g., Gemini 1.5 Flash) to parse the URL content.
+    *   **Persistence:** The model returns structured JSON recipe data compatible with the app's schema, which is then stored in the local database.
 *   **P0 Error Handling:** Simple "Failed to add recipe" message if parsing fails or URL is invalid.
 *   **P0:** Users can **delete any recipe** (including preloaded ones) from the recipe details/view screen.
+*   **P1:** **Share Sheet Integration:** Users can share a URL directly from a browser or other apps to RecipeViewer using the Android Share Sheet.
 *   **P1:** Recipes and images will be stored and synced via a custom cloud backend service.
-*   **P1:** Android **"Share" menu integration**: Users can share a URL directly from a browser to RecipeViewer.
 *   **P2:** Manual management (create from scratch, edit) of personal recipes.
 *   **P2:** **Gemini Multimodal parsing**: Support for parsing recipes from images or screenshots.
 

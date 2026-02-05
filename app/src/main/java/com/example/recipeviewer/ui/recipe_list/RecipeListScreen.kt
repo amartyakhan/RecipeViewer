@@ -1,21 +1,24 @@
 package com.example.recipeviewer.ui.recipe_list
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.recipeviewer.domain.model.Recipe
+import android.util.Patterns
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,12 +27,19 @@ fun RecipeListScreen(
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showAddDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("My Recipes") }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showAddDialog = true }) {
+                Icon(Icons.Default.Add, contentDescription = "Add Recipe")
+            }
         }
     ) { paddingValues ->
         Box(
@@ -71,7 +81,60 @@ fun RecipeListScreen(
                 }
             }
         }
+
+        if (showAddDialog) {
+            AddRecipeDialog(
+                onDismiss = { showAddDialog = false },
+                onGetRecipe = { url ->
+                    showAddDialog = false
+                    Toast.makeText(context, "Successfully added recipe", Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
     }
+}
+
+@Composable
+fun AddRecipeDialog(
+    onDismiss: () -> Unit,
+    onGetRecipe: (String) -> Unit
+) {
+    var url by remember { mutableStateOf("") }
+    val isValidUrl = remember(url) {
+        url.isNotBlank() && Patterns.WEB_URL.matcher(url).matches()
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add Recipe by URL") },
+        text = {
+            Column {
+                Text("Paste a recipe URL below to extract its details.")
+                Spacer(modifier = Modifier.height(16.dp))
+                TextField(
+                    value = url,
+                    onValueChange = { url = it },
+                    label = { Text("Recipe URL") },
+                    placeholder = { Text("https://example.com/recipe") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onGetRecipe(url) },
+                enabled = isValidUrl
+            ) {
+                Text("Get Recipe")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
