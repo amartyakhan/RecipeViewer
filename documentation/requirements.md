@@ -15,9 +15,14 @@ This document outlines the functional and non-functional requirements for the Re
         *   Clicking the FAB opens a text input field for the URL.
         *   If a valid URL is entered, a "Get Recipe" button becomes available.
         *   Clicking "Get Recipe" triggers the extraction pipeline.
+        *   **Loading State:** While the Gemini API is processing the request, a loading UI is displayed on the input popup, and the background UI is disabled to prevent concurrent actions.
     *   **Extraction:** The app uses the **Google AI Client SDK for Android** to call a cloud-based Gemini model (e.g., Gemini 1.5 Flash) to parse the URL content.
     *   **Persistence:** The model returns structured JSON recipe data compatible with the app's schema, which is then stored in the local database.
-*   **P0 Error Handling:** Simple "Failed to add recipe" message if parsing fails or URL is invalid.
+*   **P0 Error Handling:** 
+    *   Display specific **Toast notifications** based on the extraction result or API response code.
+    *   Example: 503 error should specifically notify "Service not available".
+    *   **Timeout (P0):** If the Gemini API response takes longer than **30 seconds**, the request should be cancelled, and a "Request timed out. Please try again." Toast should be shown.
+    *   General "Failed to add recipe" message for other unexpected failures or invalid URL parsing.
 *   **P0:** Users can **delete any recipe** (including preloaded ones) from the recipe details/view screen.
 *   **P1:** **Share Sheet Integration:** Users can share a URL directly from a browser or other apps to RecipeViewer using the Android Share Sheet.
 *   **P1:** Recipes and images will be stored and synced via a custom cloud backend service.

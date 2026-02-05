@@ -78,6 +78,8 @@ The database will consist of the following tables:
 *   Validates the input to ensure it is a well-formed URL.
 *   A "Get Recipe" button is enabled only when a valid URL is present.
 *   Clicking the button triggers the `AddRecipeFromUrlUseCase`.
+*   **Loading UI:** While the extraction is in progress, the dialog displays a `CircularProgressIndicator`.
+*   **Interaction Blocking:** The background UI is disabled/unresponsive until the extraction process completes or fails.
 
 ### 6.3 Recipe Detail Screen
 *   Displays the full list of ingredients and steps.
@@ -101,6 +103,7 @@ The database will consist of the following tables:
     *   **Share Sheet (P1):** Integration with Android's Share Sheet via an `intent-filter` in `AndroidManifest.xml` for `ACTION_SEND`.
 2.  **Scraping:** Uses Jsoup to extract text content from the `<article>` or `<body>` tag of the URL.
 3.  **Extraction:** Sends the extracted text to Gemini via the Google AI Client SDK.
+    *   **Timeout Implementation:** The call to Gemini will be wrapped in a `withTimeout(30000)` block in the repository/datasource layer to ensure the app doesn't wait indefinitely.
 4.  **Structured Output:** The Generative Model is configured with `responseMimeType = "application/json"` to ensure a parseable JSON response.
 5.  **Persistence:** The JSON is parsed into the `Recipe` domain model and saves it to Room.
 
@@ -124,4 +127,9 @@ The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+
 
 ## 9. Error Handling
 *   Repository layer will catch network, AI SDK, and database exceptions and wrap them in a `Result` or `Resource` class.
-*   UI will display user-friendly Toast messages or SnackBar for failures (e.g., "Invalid URL", "Failed to parse recipe").
+*   UI will display user-friendly Toast messages based on the specific error encountered:
+    *   **HTTP 503:** "Service not available. Please try again later."
+    *   **Timeout (30s):** "Request timed out. Please try again."
+    *   **Invalid URL:** "The URL provided is invalid."
+    *   **Parsing Failure:** "Failed to parse recipe from this website."
+    *   **General Error:** "An unexpected error occurred."

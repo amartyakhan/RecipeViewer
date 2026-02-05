@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.recipeviewer.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.generationConfig
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -54,11 +55,15 @@ class RecipeExtractionDataSource @Inject constructor() {
                 - If prep or cook time is not specified, use 0.
                 
                 Text to parse:
-                $scrapedText
+                ${scrapedText}
             """.trimIndent()
 
             Log.d("RecipeExtraction", "Calling Gemini API with prompt length: ${prompt.length}")
-            val response = model.generateContent(prompt)
+            
+            val response = withTimeout(30000) {
+                model.generateContent(prompt)
+            }
+
             val resultText = response.text ?: throw IllegalStateException("Gemini returned empty response")
             Log.d("RecipeExtraction", "Gemini response successful: ${resultText.take(200)}...")
             resultText
