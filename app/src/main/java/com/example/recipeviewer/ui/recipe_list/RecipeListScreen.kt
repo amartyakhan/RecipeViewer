@@ -53,7 +53,14 @@ fun RecipeListScreen(
             ) {
                 when (val state = uiState) {
                     is RecipeListUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("Loading recipes...", style = MaterialTheme.typography.bodyLarge)
+                        }
                     }
                     is RecipeListUiState.Success -> {
                         if (state.recipes.isEmpty()) {
@@ -80,7 +87,8 @@ fun RecipeListScreen(
                         Text(
                             text = state.message,
                             color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -129,7 +137,9 @@ fun ExtractionFeedbackDialog(
         )
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (state) {
@@ -138,7 +148,8 @@ fun ExtractionFeedbackDialog(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Extracting recipe...",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
                     )
                 }
                 is ExtractionUiState.Success -> {
@@ -152,7 +163,8 @@ fun ExtractionFeedbackDialog(
                     Text(
                         text = "Successfully added:",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = state.recipeName,
@@ -166,7 +178,7 @@ fun ExtractionFeedbackDialog(
                 }
                 is ExtractionUiState.Error -> {
                     Icon(
-                        imageVector = Icons.Default.Warning, // Changed from Error to Warning
+                        imageVector = Icons.Default.Warning,
                         contentDescription = "Error",
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(48.dp)
@@ -175,7 +187,8 @@ fun ExtractionFeedbackDialog(
                     Text(
                         text = "Extraction Failed",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.error
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
