@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.recipeviewer.ui.recipe_list.RecipeListScreen
 
 sealed class Screen(val route: String) {
     object RecipeList : Screen("recipe_list")
@@ -24,9 +25,11 @@ fun RecipeNavGraph(navController: NavHostController) {
         startDestination = Screen.RecipeList.route
     ) {
         composable(route = Screen.RecipeList.route) {
-            // TODO: RecipeListScreen(onRecipeClick = { recipeId -> 
-            //    navController.navigate(Screen.RecipeDetail.createRoute(recipeId)) 
-            // })
+            RecipeListScreen(
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Screen.RecipeDetail.createRoute(recipeId))
+                }
+            )
         }
         composable(
             route = Screen.RecipeDetail.route,

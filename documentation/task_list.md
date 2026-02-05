@@ -15,36 +15,36 @@ This document tracks the progress of P0 requirements implementation for the Reci
 - [x] Implement Navigation Graph (List -> Overview -> Cook Mode).
 
 ## 2. Data Layer Implementation (Room & Persistence)
-- [ ] Define Room Entities:
-    - [ ] `RecipeEntity`
-    - [ ] `IngredientEntity` (Foreign key to Recipe)
-    - [ ] `StepEntity` (Foreign key to Recipe)
-- [ ] Create Room DAOs for CRUD operations:
-    - [ ] Insert recipe with ingredients and steps (Transaction).
-    - [ ] Query all recipes for list view.
-    - [ ] Query full recipe details by ID.
-    - [ ] Delete recipe.
-- [ ] Implement Room Database class and Hilt module for Database injection.
+- [x] Define Room Entities:
+    - [x] `RecipeEntity`
+    - [x] `IngredientEntity` (Foreign key to Recipe)
+    - [x] `StepEntity` (Foreign key to Recipe)
+- [x] Create Room DAOs for CRUD operations:
+    - [x] Insert recipe with ingredients and steps (Transaction).
+    - [x] Query all recipes for list view.
+    - [x] Query full recipe details by ID.
+    - [x] Delete recipe.
+- [x] Implement Room Database class and Hilt module for Database injection.
 
 ## 3. Domain Layer & Models
-- [ ] Define Domain Models:
-    - [ ] `Recipe`
-    - [ ] `Ingredient`
-    - [ ] `Step`
-- [ ] Define Repository Interfaces.
-- [ ] Implement Use Cases:
-    - [ ] `GetRecipesUseCase`
-    - [ ] `GetRecipeByIdUseCase`
-    - [ ] `AddRecipeFromUrlUseCase`
-    - [ ] `DeleteRecipeUseCase`
-    - [ ] `ScaleIngredientsUseCase` (Mathematical logic for 0.5x, 1x, 2x, 4x)
+- [x] Define Domain Models:
+    - [x] `Recipe`
+    - [x] `Ingredient`
+    - [x] `Step`
+- [x] Define Repository Interfaces.
+- [x] Implement Use Cases:
+    - [x] `GetRecipesUseCase`
+    - [x] `GetRecipeByIdUseCase`
+    - [ ] `AddRecipeFromUrlUseCase` (Pending Network Layer)
+    - [x] `DeleteRecipeUseCase`
+    - [x] `ScaleIngredientsUseCase` (Mathematical logic for 0.5x, 1x, 2x, 4x)
 
 ## 4. Recipe List Feature
-- [ ] Implement `RecipeListViewModel`.
-- [ ] Create `RecipeListScreen` Composable:
-    - [ ] `LazyColumn` for recipe cards.
-    - [ ] `RecipeCard` component (Image, Title, Time, Ingredient summary).
-- [ ] Handle navigation to Recipe Overview.
+- [x] Implement `RecipeListViewModel`.
+- [x] Create `RecipeListScreen` Composable:
+    - [x] `LazyColumn` for recipe cards.
+    - [x] `RecipeCard` component (Image, Title, Time, Ingredient summary).
+- [x] Handle navigation to Recipe Overview.
 
 ## 5. Recipe Overview & Scaling Feature
 - [ ] Implement `RecipeDetailViewModel`.
@@ -71,12 +71,12 @@ This document tracks the progress of P0 requirements implementation for the Reci
 - [ ] Implement error handling and loading states for the import process.
 
 ## 8. Initialization & Preloaded Data
-- [ ] Create hardcoded data for:
-    - [ ] Fluffy Pancakes
-    - [ ] Spaghetti Bolognese
-    - [ ] Chocolate Chip Cookies
-- [ ] Implement logic to prepopulate the Room database on first app launch.
-- [ ] Verify image loading for preloaded recipes (using bundled assets or URLs).
+- [x] Create hardcoded data for:
+    - [x] Fluffy Pancakes
+    - [x] Spaghetti Bolognese
+    - [x] Chocolate Chip Cookies
+- [x] Implement logic to prepopulate the Room database on first app launch.
+- [x] Verify image loading for preloaded recipes (using bundled assets or URLs).
 
 ## 9. Final Polish & Testing (P0)
 - [ ] Verify Material You dynamic coloring works on API 31+.
