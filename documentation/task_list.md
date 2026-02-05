@@ -3,16 +3,16 @@
 This document tracks the progress of P0 requirements implementation for the RecipeViewer application.
 
 ## 1. Project Setup & Infrastructure
-- [ ] Configure `build.gradle.kts` with necessary dependencies:
-    - [ ] Compose (Material 3, Navigation, Tooling)
-    - [ ] Hilt (Dependency Injection)
-    - [ ] Room (Persistence)
-    - [ ] Retrofit & OkHttp (Networking)
-    - [ ] Coil (Image Loading)
-    - [ ] Serialization (Kotlinx Serialization)
-- [ ] Set up Hilt Application class and Manifest entry.
-- [ ] Define Material 3 Theme with Dynamic Color support (API 31+).
-- [ ] Implement Navigation Graph (List -> Overview -> Cook Mode).
+- [x] Configure `build.gradle.kts` with necessary dependencies:
+    - [x] Compose (Material 3, Navigation, Tooling)
+    - [x] Hilt (Dependency Injection)
+    - [x] Room (Persistence)
+    - [x] Retrofit & OkHttp (Networking)
+    - [x] Coil (Image Loading)
+    - [x] Serialization (Kotlinx Serialization)
+- [x] Set up Hilt Application class and Manifest entry.
+- [x] Define Material 3 Theme with Dynamic Color support (API 31+).
+- [x] Implement Navigation Graph (List -> Overview -> Cook Mode).
 
 ## 2. Data Layer Implementation (Room & Persistence)
 - [ ] Define Room Entities:
