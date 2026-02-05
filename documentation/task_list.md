@@ -61,6 +61,7 @@ This document tracks the progress of P0 requirements implementation for the Reci
 - [x] Create `CookModeScreen` Composable:
     - [x] `HorizontalPager` for step-by-step navigation.
     - [x] Step content: Instruction text, scaled ingredients for step, timer/duration display.
+    - [x] Add explicit "Previous" and "Next" navigation buttons at the bottom using Material 3 styles.
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 
 ## 7. URL Import Feature (Gemini Proxy)

@@ -51,9 +51,9 @@ This document outlines the functional and non-functional requirements for the Re
 *   **P0 (Must-Have):** Step-by-step instruction slideshow.
     *   **Screen Behavior:** Screen stays awake (Keep Screen On) while in Cook Mode.
     *   **Navigation:**
-        *   Previous and Next buttons.
+        *   **Bottom Navigation Bar:** Explicit "Previous" and "Next" buttons at the bottom of the screen using Material Design arrow icons.
         *   Swipe gestures (left/right) for back and forth.
-        *   Tap to move forward to the next step.
+        *   Tap to move forward to the next step (optional).
     *   **Content per step:**
         *   One instruction step.
         *   Specific ingredients and quantities for that step.

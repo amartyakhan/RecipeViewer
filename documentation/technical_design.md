@@ -72,6 +72,11 @@ The database will consist of three main tables:
 ### 6.3 Cook Mode (Slideshow)
 *   Implemented using a `HorizontalPager` for swipe gestures and step navigation.
 *   **Keep Screen On:** Uses `LocalView.current.keepScreenOn = true` while the Composable is active.
+*   **Bottom Navigation:**
+    *   Uses a `BottomAppBar` or a simple `Row` at the bottom of the screen.
+    *   Contains "Previous" and "Next" `FilledTonalButton` or `IconButton` components.
+    *   Buttons use `Icons.AutoMirrored.Filled.ArrowBack` and `Icons.AutoMirrored.Filled.ArrowForward`.
+    *   Buttons are enabled/disabled based on the current page index in `pagerState`.
 *   Displays specific ingredients and duration for the current step.
 
 ### 6.4 URL Import
