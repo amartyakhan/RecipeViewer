@@ -78,11 +78,12 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
 - [ ] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
 - [ ] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
-- [ ] **Loading & Error Handling (P0):**
-    - [ ] Add `CircularProgressIndicator` to the "Add Recipe" UI during extraction.
-    - [ ] Implement logic to disable background interaction while extraction is in progress.
-    - [ ] Update UI to show granular Toast notifications based on error codes (e.g., 503 Service Unavailable).
-    - [ ] Implement **30-second timeout** for the Gemini API call and show "Request timed out" notification.
+- [x] **Loading & Feedback UI (P0):**
+    - [x] Implement loading, success, and failure states within the "Add Recipe" dialog (moved to a separate feedback dialog).
+    - [x] Display success/failure icons and messages in the dialog instead of Toasts.
+    - [x] Include the recipe name in the success message (e.g., "Successfully added: [Name]").
+    - [x] Implement a "Close" or "OK" button to dismiss the dialog after the process completes.
+    - [x] Implement **30-second timeout** and display "Request timed out" message in the dialog.
 - [ ] **Intercept Shared URL (P1):** Add `intent-filter` to `MainActivity` in `AndroidManifest.xml` for `ACTION_SEND` (text/plain) to handle URLs shared from browsers.
 
 ## 8. Initialization & Preloaded Data (P0)

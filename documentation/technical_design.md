@@ -78,8 +78,14 @@ The database will consist of the following tables:
 *   Validates the input to ensure it is a well-formed URL.
 *   A "Get Recipe" button is enabled only when a valid URL is present.
 *   Clicking the button triggers the `AddRecipeFromUrlUseCase`.
-*   **Loading UI:** While the extraction is in progress, the dialog displays a `CircularProgressIndicator`.
-*   **Interaction Blocking:** The background UI is disabled/unresponsive until the extraction process completes or fails.
+*   **Loading & Feedback UI:** 
+    *   While extraction is in progress, the dialog displays a `CircularProgressIndicator`.
+    *   Upon completion, the loading indicator is replaced with a **Success or Failure icon** (using Material Symbols).
+    *   A text message is displayed below the icon:
+        *   **Success:** "Successfully added [Recipe Name]"
+        *   **Failure:** Specific error message (e.g., "Request timed out").
+    *   The dialog remains open to show the result, with a "Close" or "OK" button appearing after completion.
+*   **Interaction Blocking:** The background UI is disabled/unresponsive until the extraction process completes or the dialog is closed.
 
 ### 6.3 Recipe Detail Screen
 *   Displays the full list of ingredients and steps.
@@ -127,7 +133,7 @@ The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+
 
 ## 9. Error Handling
 *   Repository layer will catch network, AI SDK, and database exceptions and wrap them in a `Result` or `Resource` class.
-*   UI will display user-friendly Toast messages based on the specific error encountered:
+*   UI will display user-friendly feedback **within the Add Recipe Dialog** based on the specific error encountered:
     *   **HTTP 503:** "Service not available. Please try again later."
     *   **Timeout (30s):** "Request timed out. Please try again."
     *   **Invalid URL:** "The URL provided is invalid."

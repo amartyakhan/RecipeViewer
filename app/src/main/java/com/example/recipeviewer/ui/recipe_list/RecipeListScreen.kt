@@ -1,7 +1,6 @@
 package com.example.recipeviewer.ui.recipe_list
 
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,22 +8,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.recipeviewer.domain.model.Recipe
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,31 +30,8 @@ fun RecipeListScreen(
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val isExtracting by viewModel.isExtracting.collectAsState()
+    val extractionUiState by viewModel.extractionUiState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
-    LaunchedEffect(viewModel.extractionResult) {
-        viewModel.extractionResult.collectLatest { result ->
-            result.onSuccess { json ->
-                // In a real app, this would be navigation or a success dialog
-                Toast.makeText(context, "Recipe extracted successfully!", Toast.LENGTH_LONG).show()
-            }.onFailure { error ->
-                val message = when (error) {
-                    is TimeoutCancellationException -> "Request timed out. Please try again."
-                    else -> {
-                        val errorMessage = error.message ?: ""
-                        when {
-                            errorMessage.contains("503") -> "Service not available. Please try again later."
-                            errorMessage.contains("429") -> "Too many requests. Please wait a moment."
-                            else -> "Failed to add recipe: ${error.message}"
-                        }
-                    }
-                }
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -123,8 +97,8 @@ fun RecipeListScreen(
             }
         }
 
-        // Background disabling and loading UI
-        if (isExtracting) {
+        // Background disabling and extraction feedback UI
+        if (extractionUiState !is ExtractionUiState.Idle) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -132,24 +106,89 @@ fun RecipeListScreen(
                     .clickable(enabled = false) {}, // Intercept clicks
                 contentAlignment = Alignment.Center
             ) {
-                Card(
-                    modifier = Modifier.padding(32.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                ExtractionFeedbackDialog(
+                    state = extractionUiState,
+                    onDismiss = { viewModel.dismissExtraction() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ExtractionFeedbackDialog(
+    state: ExtractionUiState,
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (state) {
+                is ExtractionUiState.Loading -> {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Extracting recipe...",
+                        style = MaterialTheme.typography.bodyLarge
                     )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Extracting recipe...",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                }
+                is ExtractionUiState.Success -> {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Success",
+                        tint = Color(0xFF4CAF50),
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Successfully added:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = state.recipeName,
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                        Text("OK")
                     }
                 }
+                is ExtractionUiState.Error -> {
+                    Icon(
+                        imageVector = Icons.Default.Warning, // Changed from Error to Warning
+                        contentDescription = "Error",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Extraction Failed",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = state.message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                        Text("Close")
+                    }
+                }
+                ExtractionUiState.Idle -> {}
             }
         }
     }
