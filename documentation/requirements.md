@@ -17,7 +17,9 @@ This document outlines the functional and non-functional requirements for the Re
         *   Clicking "Get Recipe" triggers the extraction pipeline.
         *   **Loading & Feedback UI:** While processing, a loading indicator is displayed in the popup. Upon completion, the popup displays a **success or failure icon** along with a descriptive message. The background UI is disabled during this process.
         *   **Success Feedback:** If successful, the message displays the name of the extracted recipe (e.g., "Successfully added: Fluffy Pancakes").
-    *   **Extraction:** The app uses the **Google AI Client SDK for Android** to call a cloud-based Gemini model (e.g., Gemini 1.5 Flash) to parse the URL content.
+    *   **Extraction:** 
+        *   The app uses the **Google AI Client SDK for Android** to call a cloud-based Gemini model (e.g., Gemini 1.5 Flash) to parse the URL content.
+        *   **Image URL Fallback (P0):** If Gemini fails to extract a valid image URL, the app should employ a fallback logic to identify a representative image URL from the website's content (e.g., OpenGraph tags or primary images) and associate it with the recipe.
     *   **Persistence:** The model returns structured JSON recipe data compatible with the app's schema, which is then stored in the local database.
 *   **P0 Error Handling:** 
     *   Display specific **failure icons and messages** within the extraction popup based on the result or API response code.

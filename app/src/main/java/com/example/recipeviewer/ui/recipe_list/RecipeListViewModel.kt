@@ -35,7 +35,7 @@ class RecipeListViewModel @Inject constructor(
             _extractionUiState.value = ExtractionUiState.Loading
             val scrapeResult = recipeRepository.scrapeRecipeText(url)
             scrapeResult.onSuccess { text ->
-                val saveResult = recipeRepository.extractAndSaveRecipe(text)
+                val saveResult = recipeRepository.extractAndSaveRecipe(text, url)
                 saveResult.onSuccess {
                     _extractionUiState.value = ExtractionUiState.Success("Recipe added successfully")
                 }.onFailure { error ->

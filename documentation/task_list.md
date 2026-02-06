@@ -39,7 +39,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Implement Use Cases:
     - [x] `GetRecipesUseCase`
     - [x] `GetRecipeByIdUseCase`
-    - [ ] `AddRecipeFromUrlUseCase` (Pending Extraction Layer)
+    - [x] `AddRecipeFromUrlUseCase`
     - [x] `DeleteRecipeUseCase`
     - [x] `ScaleIngredientsUseCase` (Mathematical logic for 0.5x, 1x, 2x, 4x)
 
@@ -65,7 +65,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Implement `CookModeViewModel`.
 - [x] Create `CookModeScreen` Composable:
     - [x] `HorizontalPager` for step-by-step navigation.
-    - [ ] Update `StepPage` to display specific ingredients for each step, dynamically scaled.
+    - [x] Update `StepPage` to display specific ingredients for each step, dynamically scaled.
     - [x] Add explicit "Previous" and "Next" navigation buttons at the bottom using Material 3 styles.
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 
@@ -77,6 +77,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Add "Get Recipe" button that triggers the pipeline upon validation.
 - [x] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
 - [x] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
+- [x] **Image URL Fallback (P0):** If Gemini response lacks an image URL, use Jsoup to parse the original HTML for a suitable image (e.g., from OpenGraph tags).
 - [x] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
 - [x] **Loading & Feedback UI (P0):**
     - [x] Implement loading, success, and failure states within the "Add Recipe" dialog (moved to a separate feedback dialog).
@@ -91,7 +92,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Fluffy Pancakes
     - [x] Spaghetti Bolognese
     - [x] Chocolate Chip Cookies
-- [ ] Map preloaded ingredients to their respective steps in `PreloadData`.
+- [x] Map preloaded ingredients to their respective steps in `PreloadData`.
 - [x] Implement logic to prepopulate the Room database on first app launch.
 - [x] Verify image loading for preloaded recipes (using bundled assets or URLs).
 

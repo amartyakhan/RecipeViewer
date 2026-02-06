@@ -65,10 +65,18 @@ class RecipeRepositoryImpl @Inject constructor(
         return recipeExtractionDataSource.extractRecipe(scrapedText)
     }
 
-    override suspend fun extractAndSaveRecipe(scrapedText: String): Result<Unit> {
+    override suspend fun extractAndSaveRecipe(scrapedText: String, url: String): Result<Unit> {
         return recipeExtractionDataSource.extractRecipe(scrapedText).mapCatching { jsonString ->
             val recipeDto = json.decodeFromString<RecipeDto>(jsonString)
-            val recipe = recipeDto.toDomain()
+            
+            // Image Fallback Logic
+            val finalImageUrl = if (recipeDto.imageUrl.isNullOrBlank()) {
+                recipeScraper.extractImageUrl(url) ?: ""
+            } else {
+                recipeDto.imageUrl
+            }
+            
+            val recipe = recipeDto.copy(imageUrl = finalImageUrl).toDomain()
             
             withContext(Dispatchers.IO) {
                 // 1. Insert Recipe

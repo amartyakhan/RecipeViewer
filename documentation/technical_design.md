@@ -18,7 +18,7 @@ The application will follow **Clean Architecture** principles and the **MVVM (Mo
 *   **Design System:** Material 3 (Material You) with Dynamic Coloring
 *   **Database:** Room (SQLite)
 *   **Extraction Engine:** Google AI Client SDK (`com.google.ai.client.generativeai`) for direct communication with Gemini Pro/Flash.
-*   **HTML Parsing:** Jsoup (for pre-processing URLs to extract text content).
+*   **HTML Parsing:** Jsoup (for pre-processing URLs to extract text content and fallback image identification).
 *   **Security:** Secrets Gradle Plugin (to manage Gemini API keys in `local.properties`).
 *   **Dependency Injection:** Hilt
 *   **Asynchronous Programming:** Kotlin Coroutines & Flow
@@ -111,7 +111,14 @@ The database will consist of the following tables:
 3.  **Extraction:** Sends the extracted text to Gemini via the Google AI Client SDK.
     *   **Timeout Implementation:** The call to Gemini will be wrapped in a `withTimeout(30000)` block in the repository/datasource layer to ensure the app doesn't wait indefinitely.
 4.  **Structured Output:** The Generative Model is configured with `responseMimeType = "application/json"` to ensure a parseable JSON response.
-5.  **Persistence:** The JSON is parsed into the `Recipe` domain model and saves it to Room.
+5.  **Image Fallback (P0):**
+    *   If the Gemini response does not contain a valid `imageUrl`, a secondary processing step is triggered.
+    *   The Jsoup-parsed document is scanned for representative images. Priority order:
+        1.  OpenGraph image tag (`<meta property="og:image" content="...">`).
+        2.  Schema.org `Recipe` image property.
+        3.  First large image within the `<article>` tag.
+    *   The identified URL is then set as the recipe's `imageUrl`.
+6.  **Persistence:** The JSON is parsed into the `Recipe` domain model and saves it to Room.
 
 ## 7. Key Features Implementation Details
 
