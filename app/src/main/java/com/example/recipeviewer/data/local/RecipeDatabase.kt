@@ -13,8 +13,8 @@ import com.example.recipeviewer.data.local.model.*
         StepEntity::class,
         StepIngredientEntity::class
     ],
-    version = 5,
-    exportSchema = false
+    version = 6,
+    exportSchema = true
 )
 abstract class RecipeDatabase : RoomDatabase() {
     abstract val recipeDao: RecipeDao

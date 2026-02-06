@@ -23,5 +23,6 @@ data class IngredientEntity(
     val recipeId: Long,
     val name: String,
     val quantity: Double,
-    val unit: String
+    val unit: String,
+    val isChecked: Boolean = false
 )

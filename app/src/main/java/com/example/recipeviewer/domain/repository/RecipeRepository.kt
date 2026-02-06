@@ -15,4 +15,5 @@ interface RecipeRepository {
     suspend fun scrapeRecipeText(url: String): Result<String>
     suspend fun extractRecipe(scrapedText: String): Result<String>
     suspend fun extractAndSaveRecipe(scrapedText: String, url: String): Result<Unit>
+    suspend fun toggleIngredientChecked(ingredientId: Long, isChecked: Boolean)
 }

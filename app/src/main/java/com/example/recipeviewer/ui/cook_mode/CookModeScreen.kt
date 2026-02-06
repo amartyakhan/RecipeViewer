@@ -1,6 +1,7 @@
 package com.example.recipeviewer.ui.cook_mode
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -64,7 +65,10 @@ fun CookModeScreen(
                 is CookModeUiState.Loading -> CircularProgressIndicator()
                 is CookModeUiState.Error -> Text(state.message)
                 is CookModeUiState.Success -> {
-                    CookModeContent(recipe = state.recipe)
+                    CookModeContent(
+                        recipe = state.recipe,
+                        onIngredientCheckedChange = viewModel::toggleIngredientChecked
+                    )
                 }
             }
         }
@@ -80,7 +84,10 @@ data class FlattenedStep(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CookModeContent(recipe: Recipe) {
+private fun CookModeContent(
+    recipe: Recipe,
+    onIngredientCheckedChange: (Long, Boolean) -> Unit
+) {
     val flattenedSteps = remember(recipe) {
         recipe.parts.flatMap { part ->
             part.steps.map { step ->
@@ -111,7 +118,10 @@ private fun CookModeContent(recipe: Recipe) {
             modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
-            StepPage(flattenedStep = flattenedSteps[pageIndex])
+            StepPage(
+                flattenedStep = flattenedSteps[pageIndex],
+                onIngredientCheckedChange = onIngredientCheckedChange
+            )
         }
 
         // Navigation Buttons
@@ -158,7 +168,10 @@ private fun CookModeContent(recipe: Recipe) {
 }
 
 @Composable
-private fun StepPage(flattenedStep: FlattenedStep) {
+private fun StepPage(
+    flattenedStep: FlattenedStep,
+    onIngredientCheckedChange: (Long, Boolean) -> Unit
+) {
     val step = flattenedStep.step
     Column(
         modifier = Modifier
@@ -202,11 +215,22 @@ private fun StepPage(flattenedStep: FlattenedStep) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             step.stepIngredients.forEach { ingredient ->
-                Text(
-                    text = "• ${ingredient.quantity} ${ingredient.unit} ${ingredient.name}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onIngredientCheckedChange(ingredient.id, !ingredient.isChecked) }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = ingredient.isChecked,
+                        onCheckedChange = { onIngredientCheckedChange(ingredient.id, it) }
+                    )
+                    Text(
+                        text = "${ingredient.quantity} ${ingredient.unit} ${ingredient.name}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
 

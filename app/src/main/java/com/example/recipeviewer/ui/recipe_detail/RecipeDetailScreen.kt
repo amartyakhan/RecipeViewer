@@ -1,5 +1,6 @@
 package com.example.recipeviewer.ui.recipe_detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -93,7 +94,8 @@ fun RecipeDetailScreen(
                     RecipeDetailContent(
                         recipe = state.recipe,
                         multiplier = multiplier,
-                        onMultiplierChange = viewModel::setMultiplier
+                        onMultiplierChange = viewModel::setMultiplier,
+                        onIngredientCheckedChange = viewModel::toggleIngredientChecked
                     )
                 }
             }
@@ -105,7 +107,8 @@ fun RecipeDetailScreen(
 fun RecipeDetailContent(
     recipe: Recipe,
     multiplier: Float,
-    onMultiplierChange: (Float) -> Unit
+    onMultiplierChange: (Float) -> Unit,
+    onIngredientCheckedChange: (Long, Boolean) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -146,10 +149,22 @@ fun RecipeDetailContent(
         }
 
         items(recipe.ingredients) { ingredient ->
-            Text(
-                text = "• ${ingredient.quantity} ${ingredient.unit} ${ingredient.name}",
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onIngredientCheckedChange(ingredient.id, !ingredient.isChecked) }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = ingredient.isChecked,
+                    onCheckedChange = { onIngredientCheckedChange(ingredient.id, it) }
+                )
+                Text(
+                    text = "${ingredient.quantity} ${ingredient.unit} ${ingredient.name}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
 
         item {

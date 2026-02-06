@@ -51,7 +51,8 @@ data class Ingredient(
     val id: Long = 0,
     val name: String,
     val quantity: Double,
-    val unit: String
+    val unit: String,
+    val isChecked: Boolean = false
 )
 
 data class Step(
@@ -67,6 +68,7 @@ data class Step(
 The database will consist of the following tables:
 1.  **RecipesTable**: Basic info (title, image, times, servings).
 2.  **IngredientsTable**: List of all ingredients for a recipe. Foreign key to Recipe ID.
+    *   `isChecked`: Boolean column to track the checklist state.
 3.  **RecipePartsTable**: List of recipe parts (sections). Foreign key to Recipe ID.
     *   `recipeId`: Foreign key to RecipesTable.
     *   `order`: Sequence of the part.
@@ -102,6 +104,7 @@ The database will consist of the following tables:
 
 ### 6.3 Recipe Detail Screen
 *   Displays the full list of ingredients and steps.
+*   **Ingredient Checklist:** Uses `Checkbox` or `Toggleable` Row for each ingredient. Toggling updates the `isChecked` state in the database via the ViewModel and a `ToggleIngredientCheckedUseCase`.
 *   **Grouped Steps:** Steps are visually grouped by their respective `RecipePart`. If a part has a title, it is displayed as a sub-header.
 *   Includes a "Start Cooking" FAB or button.
 *   Provides a Scaling Selector (0.5x, 1x, 2x, 4x) which triggers UI updates via the ViewModel.
@@ -116,6 +119,7 @@ The database will consist of the following tables:
     *   **Part Header:** If the recipe has multiple parts or the current part has a title, display "Part X: [Title]" or "Part X" above the step instruction.
     *   Displays the instruction text for the current step.
     *   Displays a list of **exact ingredients and quantities** required for the current step, dynamically scaled based on the selected multiplier.
+    *   **Checklist Sync:** Each ingredient in the step list has a checkbox. Toggling it updates the same `isChecked` state in the database, ensuring synchronization with the Recipe Detail screen.
     *   Displays the duration for the step if available.
 
 ### 6.5 URL Import Pipeline
@@ -143,10 +147,14 @@ Scaling logic resides in the `ScaleIngredientsUseCase`:
 `scaledQuantity = originalQuantity * multiplier`
 This scaling is applied to both the main ingredient list in the Detail Screen and the step-specific ingredient lists in Cook Mode.
 
-### 7.2 Preloaded Data
+### 7.2 Checklist State Management
+The `isChecked` state for ingredients is persisted in the `IngredientsTable`.
+A `ToggleIngredientCheckedUseCase` will be implemented to update this state. ViewModels will observe the database via Flow to ensure UI updates across different screens.
+
+### 7.3 Preloaded Data
 The app populates the Room database with three P0 recipes. The `PreloadData` will be updated to include the mapping of ingredients to their respective steps and group steps into parts.
 
-### 7.3 Material You & Dynamic Coloring
+### 7.4 Material You & Dynamic Coloring
 The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+) to adapt to the user's wallpaper.
 
 ## 8. Gemini Integration

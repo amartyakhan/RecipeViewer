@@ -110,4 +110,10 @@ class RecipeRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun toggleIngredientChecked(ingredientId: Long, isChecked: Boolean) {
+        withContext(Dispatchers.IO) {
+            recipeDao.updateIngredientCheckedState(ingredientId, isChecked)
+        }
+    }
 }

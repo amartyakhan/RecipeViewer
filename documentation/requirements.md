@@ -63,6 +63,7 @@ This document outlines the functional and non-functional requirements for the Re
 *   **P0 (Must-Have):** This screen shows:
     *   Full list of all ingredients and their quantities.
     *   Full list of all cooking instructions/steps, **organized by Recipe Parts** (if applicable).
+*   **P0 (Must-Have):** **Ingredient Checklist:** Each ingredient in the list has a checkbox. Users can mark ingredients as "gathered" or "prepared".
 *   **P0 (Must-Have):** Contains a "Start Cooking" button to launch the Cook Mode slideshow.
 *   **P0 (Must-Have):** Contains the "Delete" button for the recipe.
 
@@ -77,6 +78,7 @@ This document outlines the functional and non-functional requirements for the Re
         *   One instruction step.
         *   **Part information:** Display the current Part title/number if the recipe has parts.
         *   **Exact quantities** of specific ingredients used in that step (dynamically scaled).
+        *   **Ingredient Checklist Sync:** Ingredients displayed in a step also have checkboxes. The checked state is synchronized with the Recipe Overview screen.
         *   Time duration for that specific step.
 *   **P1:** Simple visual timer for steps with a duration.
 *   **P2:** Notification/Alarm when the timer ends.

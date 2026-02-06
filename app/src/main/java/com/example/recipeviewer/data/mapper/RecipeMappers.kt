@@ -37,7 +37,8 @@ fun IngredientEntity.toDomain(): Ingredient {
         id = id,
         name = name,
         quantity = quantity,
-        unit = unit
+        unit = unit,
+        isChecked = isChecked
     )
 }
 
@@ -77,7 +78,8 @@ fun Ingredient.toEntity(recipeId: Long): IngredientEntity {
         recipeId = recipeId,
         name = name,
         quantity = quantity,
-        unit = unit
+        unit = unit,
+        isChecked = isChecked
     )
 }
 
@@ -117,7 +119,8 @@ fun IngredientDto.toDomain(): Ingredient {
         name = name,
         quantity = quantity,
         unit = unit,
-        id = 0
+        id = 0,
+        isChecked = false
     )
 }
 

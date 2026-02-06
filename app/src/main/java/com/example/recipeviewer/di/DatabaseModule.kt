@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.recipeviewer.data.local.PreloadData
 import com.example.recipeviewer.data.local.RecipeDatabase
@@ -24,6 +25,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE ingredients ADD COLUMN isChecked INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideRecipeDatabase(
@@ -34,7 +41,7 @@ object DatabaseModule {
             context,
             RecipeDatabase::class.java,
             "recipe_db"
-        ).fallbackToDestructiveMigration()
+        ).addMigrations(MIGRATION_5_6)
         .addCallback(
             object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {

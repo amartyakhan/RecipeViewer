@@ -7,6 +7,7 @@ import com.example.recipeviewer.domain.model.Recipe
 import com.example.recipeviewer.domain.use_case.DeleteRecipeUseCase
 import com.example.recipeviewer.domain.use_case.GetRecipeByIdUseCase
 import com.example.recipeviewer.domain.use_case.ScaleIngredientsUseCase
+import com.example.recipeviewer.domain.use_case.ToggleIngredientCheckedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ class RecipeDetailViewModel @Inject constructor(
     private val getRecipeByIdUseCase: GetRecipeByIdUseCase,
     private val scaleIngredientsUseCase: ScaleIngredientsUseCase,
     private val deleteRecipeUseCase: DeleteRecipeUseCase,
+    private val toggleIngredientCheckedUseCase: ToggleIngredientCheckedUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -47,6 +49,12 @@ class RecipeDetailViewModel @Inject constructor(
     fun deleteRecipe(recipe: Recipe) {
         viewModelScope.launch {
             deleteRecipeUseCase(recipe)
+        }
+    }
+
+    fun toggleIngredientChecked(ingredientId: Long, isChecked: Boolean) {
+        viewModelScope.launch {
+            toggleIngredientCheckedUseCase(ingredientId, isChecked)
         }
     }
 }

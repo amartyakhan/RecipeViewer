@@ -19,7 +19,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 ## 2. Data Layer Implementation (Room & Persistence) (P0)
 - [x] Define Room Entities:
     - [x] `RecipeEntity`
-    - [x] `IngredientEntity` (Foreign key to Recipe)
+    - [x] `IngredientEntity` (Foreign key to Recipe) -> *Update to include `isChecked`*
     - [ ] **Recipe Part Support:** `RecipePartEntity` (Foreign key to Recipe)
     - [x] `StepEntity` (Foreign key to Recipe) -> *Update to include partId*
     - [x] `StepIngredientEntity` (Junction table for step-specific ingredients)
@@ -29,12 +29,13 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Query all recipes for list view.
     - [x] Query full recipe details by ID (including parts).
     - [x] Delete recipe.
+    - [ ] **Checklist Support:** Add `updateIngredientCheckedState` to update the `isChecked` field.
 - [x] Implement Room Database class and Hilt module for Database injection.
 
 ## 3. Domain Layer & Models (P0)
 - [x] Define Domain Models:
     - [x] `Recipe` -> *Update to include parts list*
-    - [x] `Ingredient`
+    - [x] `Ingredient` -> *Update to include `isChecked`*
     - [ ] `RecipePart`
     - [x] `Step`
 - [x] Define Repository Interfaces.
@@ -44,6 +45,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] `AddRecipeFromUrlUseCase`
     - [x] `DeleteRecipeUseCase`
     - [x] `ScaleIngredientsUseCase` (Mathematical logic for 0.5x, 1x, 2x, 4x)
+    - [ ] `ToggleIngredientCheckedUseCase` (Update checked state in DB)
 
 ## 4. Recipe List Feature (P0)
 - [x] Implement `RecipeListViewModel`.
@@ -58,6 +60,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Create `RecipeDetailScreen` Composable:
     - [x] Recipe header (Image, Title).
     - [x] Ingredient list with scaling support.
+    - [ ] **Ingredient Checklist:** Add checkboxes to the ingredient list items.
     - [x] Scaling selector (0.5x, 1x, 2x, 4x).
     - [ ] **Grouped Instructions:** Instructions list grouped by `RecipePart`.
     - [x] "Start Cooking" Floating Action Button.
@@ -69,6 +72,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] `HorizontalPager` for step-by-step navigation.
     - [ ] **Part Info:** Display current Part number/title in the step page.
     - [x] Update `StepPage` to display specific ingredients for each step, dynamically scaled.
+    - [ ] **Ingredient Checklist Sync:** Add checkboxes to step-specific ingredients, synced with the main list.
     - [x] Add explicit "Previous" and "Next" navigation buttons at the bottom using Material 3 styles.
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 

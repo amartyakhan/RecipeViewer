@@ -32,6 +32,9 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStepIngredients(stepIngredients: List<StepIngredientEntity>)
 
+    @Query("UPDATE ingredients SET isChecked = :isChecked WHERE id = :ingredientId")
+    suspend fun updateIngredientCheckedState(ingredientId: Long, isChecked: Boolean)
+
     @Transaction
     suspend fun insertFullRecipe(
         recipe: RecipeEntity,
