@@ -9,9 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,22 +30,14 @@ class RecipeListViewModel @Inject constructor(
             initialValue = RecipeListUiState.Loading
         )
 
-    private val json = Json { ignoreUnknownKeys = true }
-
     fun onGetRecipe(url: String) {
         viewModelScope.launch {
             _extractionUiState.value = ExtractionUiState.Loading
             val scrapeResult = recipeRepository.scrapeRecipeText(url)
             scrapeResult.onSuccess { text ->
-                val extractionResult = recipeRepository.extractRecipe(text)
-                extractionResult.onSuccess { jsonString ->
-                    try {
-                        val recipeName = json.parseToJsonElement(jsonString)
-                            .jsonObject["title"]?.jsonPrimitive?.content ?: "Unknown Recipe"
-                        _extractionUiState.value = ExtractionUiState.Success(recipeName)
-                    } catch (e: Exception) {
-                        _extractionUiState.value = ExtractionUiState.Error("Failed to parse recipe name")
-                    }
+                val saveResult = recipeRepository.extractAndSaveRecipe(text)
+                saveResult.onSuccess {
+                    _extractionUiState.value = ExtractionUiState.Success("Recipe added successfully")
                 }.onFailure { error ->
                     _extractionUiState.value = ExtractionUiState.Error(getErrorMessage(error))
                 }

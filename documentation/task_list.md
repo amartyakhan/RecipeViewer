@@ -21,10 +21,10 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] `RecipeEntity`
     - [x] `IngredientEntity` (Foreign key to Recipe)
     - [x] `StepEntity` (Foreign key to Recipe)
-    - [ ] `StepIngredientEntity` (Junction table for step-specific ingredients)
+    - [x] `StepIngredientEntity` (Junction table for step-specific ingredients)
 - [x] Create Room DAOs for CRUD operations:
     - [x] Insert recipe with ingredients and steps (Transaction).
-    - [ ] Support inserting and querying step-ingredient relationships.
+    - [x] Support inserting and querying step-ingredient relationships.
     - [x] Query all recipes for list view.
     - [x] Query full recipe details by ID.
     - [x] Delete recipe.
@@ -70,14 +70,14 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
 
 ## 7. URL Import Feature (Gemini SDK)
-- [ ] Set up Gemini API Key in `local.properties` (P0).
+- [x] Set up Gemini API Key in `local.properties` (P0).
 - [x] **Manual Entry UI (P0):**
     - [x] Implement a Dialog or BottomSheet for URL input.
     - [x] Add URL validation logic.
     - [x] Add "Get Recipe" button that triggers the pipeline upon validation.
 - [x] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
-- [ ] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
-- [ ] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
+- [x] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
+- [x] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
 - [x] **Loading & Feedback UI (P0):**
     - [x] Implement loading, success, and failure states within the "Add Recipe" dialog (moved to a separate feedback dialog).
     - [x] Display success/failure icons and messages in the dialog instead of Toasts.

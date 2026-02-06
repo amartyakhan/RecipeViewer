@@ -5,6 +5,9 @@ import com.example.recipeviewer.data.local.model.RecipeEntity
 import com.example.recipeviewer.data.local.model.RecipeWithDetails
 import com.example.recipeviewer.data.local.model.StepEntity
 import com.example.recipeviewer.data.local.model.StepWithIngredients
+import com.example.recipeviewer.data.remote.model.IngredientDto
+import com.example.recipeviewer.data.remote.model.RecipeDto
+import com.example.recipeviewer.data.remote.model.StepDto
 import com.example.recipeviewer.domain.model.Ingredient
 import com.example.recipeviewer.domain.model.Recipe
 import com.example.recipeviewer.domain.model.Step
@@ -69,5 +72,36 @@ fun Step.toEntity(recipeId: Long): StepEntity {
         order = order,
         instruction = instruction,
         durationMinutes = durationMinutes
+    )
+}
+
+fun RecipeDto.toDomain(): Recipe {
+    return Recipe(
+        title = title,
+        imageUrl = imageUrl,
+        prepTimeMinutes = prepTimeMinutes,
+        cookTimeMinutes = cookTimeMinutes,
+        servings = servings,
+        ingredients = ingredients.map { it.toDomain() },
+        steps = steps.map { it.toDomain() }
+    )
+}
+
+fun IngredientDto.toDomain(): Ingredient {
+    return Ingredient(
+        name = name,
+        quantity = quantity,
+        unit = unit,
+        id = 0
+    )
+}
+
+fun StepDto.toDomain(): Step {
+    return Step(
+        order = order,
+        instruction = instruction,
+        durationMinutes = durationMinutes,
+        stepIngredients = stepIngredients.map { it.toDomain() },
+        id = 0
     )
 }
