@@ -11,7 +11,7 @@ import javax.inject.Inject
 class RecipeExtractionDataSource @Inject constructor() {
 
     private val model = GenerativeModel(
-        modelName = "gemini-3-flash-preview",
+        modelName = "gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY,
         generationConfig = generationConfig {
             responseMimeType = "application/json"
