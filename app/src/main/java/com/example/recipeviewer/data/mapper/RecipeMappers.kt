@@ -1,15 +1,13 @@
 package com.example.recipeviewer.data.mapper
 
-import com.example.recipeviewer.data.local.model.IngredientEntity
-import com.example.recipeviewer.data.local.model.RecipeEntity
-import com.example.recipeviewer.data.local.model.RecipeWithDetails
-import com.example.recipeviewer.data.local.model.StepEntity
-import com.example.recipeviewer.data.local.model.StepWithIngredients
+import com.example.recipeviewer.data.local.model.*
 import com.example.recipeviewer.data.remote.model.IngredientDto
 import com.example.recipeviewer.data.remote.model.RecipeDto
+import com.example.recipeviewer.data.remote.model.RecipePartDto
 import com.example.recipeviewer.data.remote.model.StepDto
 import com.example.recipeviewer.domain.model.Ingredient
 import com.example.recipeviewer.domain.model.Recipe
+import com.example.recipeviewer.domain.model.RecipePart
 import com.example.recipeviewer.domain.model.Step
 
 fun RecipeWithDetails.toDomain(): Recipe {
@@ -21,6 +19,15 @@ fun RecipeWithDetails.toDomain(): Recipe {
         cookTimeMinutes = recipe.cookTimeMinutes,
         servings = recipe.servings,
         ingredients = ingredients.map { it.toDomain() },
+        parts = parts.sortedBy { it.part.order }.map { it.toDomain() }
+    )
+}
+
+fun PartWithSteps.toDomain(): RecipePart {
+    return RecipePart(
+        id = part.id,
+        order = part.order,
+        title = part.title,
         steps = steps.sortedBy { it.step.order }.map { it.toDomain() }
     )
 }
@@ -55,6 +62,15 @@ fun Recipe.toEntity(): RecipeEntity {
     )
 }
 
+fun RecipePart.toEntity(recipeId: Long): RecipePartEntity {
+    return RecipePartEntity(
+        id = id,
+        recipeId = recipeId,
+        order = order,
+        title = title
+    )
+}
+
 fun Ingredient.toEntity(recipeId: Long): IngredientEntity {
     return IngredientEntity(
         id = id,
@@ -65,10 +81,11 @@ fun Ingredient.toEntity(recipeId: Long): IngredientEntity {
     )
 }
 
-fun Step.toEntity(recipeId: Long): StepEntity {
+fun Step.toEntity(recipeId: Long, partId: Long): StepEntity {
     return StepEntity(
         id = id,
         recipeId = recipeId,
+        partId = partId,
         order = order,
         instruction = instruction,
         durationMinutes = durationMinutes
@@ -83,6 +100,14 @@ fun RecipeDto.toDomain(): Recipe {
         cookTimeMinutes = cookTimeMinutes,
         servings = servings,
         ingredients = ingredients.map { it.toDomain() },
+        parts = parts.map { it.toDomain() }
+    )
+}
+
+fun RecipePartDto.toDomain(): RecipePart {
+    return RecipePart(
+        order = order,
+        title = title,
         steps = steps.map { it.toDomain() }
     )
 }

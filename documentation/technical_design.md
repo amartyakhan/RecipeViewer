@@ -17,7 +17,7 @@ The application will follow **Clean Architecture** principles and the **MVVM (Mo
 *   **UI Framework:** Jetpack Compose
 *   **Design System:** Material 3 (Material You) with Dynamic Coloring
 *   **Database:** Room (SQLite)
-*   **Extraction Engine:** Google AI Client SDK (`com.google.ai.client.generativeai`) for direct communication with Gemini Pro/Flash.
+*   *Extraction Engine:** Google AI Client SDK (`com.google.ai.client.generativeai`) for direct communication with Gemini Pro/Flash.
 *   **HTML Parsing:** Jsoup (for pre-processing URLs to extract text content and fallback image identification).
 *   **Security:** Secrets Gradle Plugin (to manage Gemini API keys in `local.properties`).
 *   **Dependency Injection:** Hilt
@@ -36,8 +36,15 @@ data class Recipe(
     val prepTimeMinutes: Int,
     val cookTimeMinutes: Int,
     val ingredients: List<Ingredient>,
-    val steps: List<Step>,
+    val parts: List<RecipePart>,
     val servings: Int = 1
+)
+
+data class RecipePart(
+    val id: Long = 0,
+    val order: Int,
+    val title: String? = null,
+    val steps: List<Step>
 )
 
 data class Ingredient(
@@ -60,8 +67,14 @@ data class Step(
 The database will consist of the following tables:
 1.  **RecipesTable**: Basic info (title, image, times, servings).
 2.  **IngredientsTable**: List of all ingredients for a recipe. Foreign key to Recipe ID.
-3.  **StepsTable**: List of cooking steps. Foreign key to Recipe ID.
-4.  **StepIngredientsTable**: A junction table linking Steps and Ingredients to specify which ingredients (and their exact quantities) are used in which step.
+3.  **RecipePartsTable**: List of recipe parts (sections). Foreign key to Recipe ID.
+    *   `recipeId`: Foreign key to RecipesTable.
+    *   `order`: Sequence of the part.
+    *   `title`: Optional title (e.g., "The Filling").
+4.  **StepsTable**: List of cooking steps. Foreign key to Recipe ID **and** RecipePart ID.
+    *   `recipeId`: Foreign key to RecipesTable.
+    *   `partId`: Foreign key to RecipePartsTable.
+5.  **StepIngredientsTable**: A junction table linking Steps and Ingredients to specify which ingredients (and their exact quantities) are used in which step.
     *   `stepId`: Foreign key to StepsTable.
     *   `ingredientId`: Foreign key to IngredientsTable.
 
@@ -89,6 +102,7 @@ The database will consist of the following tables:
 
 ### 6.3 Recipe Detail Screen
 *   Displays the full list of ingredients and steps.
+*   **Grouped Steps:** Steps are visually grouped by their respective `RecipePart`. If a part has a title, it is displayed as a sub-header.
 *   Includes a "Start Cooking" FAB or button.
 *   Provides a Scaling Selector (0.5x, 1x, 2x, 4x) which triggers UI updates via the ViewModel.
 
@@ -99,6 +113,7 @@ The database will consist of the following tables:
     *   Contains "Previous" and "Next" buttons at the bottom.
     *   Buttons are enabled/disabled based on the current page index.
 *   **Step Content:**
+    *   **Part Header:** If the recipe has multiple parts or the current part has a title, display "Part X: [Title]" or "Part X" above the step instruction.
     *   Displays the instruction text for the current step.
     *   Displays a list of **exact ingredients and quantities** required for the current step, dynamically scaled based on the selected multiplier.
     *   Displays the duration for the step if available.
@@ -109,6 +124,7 @@ The database will consist of the following tables:
     *   **Share Sheet (P1):** Integration with Android's Share Sheet via an `intent-filter` in `AndroidManifest.xml` for `ACTION_SEND`.
 2.  **Scraping:** Uses Jsoup to extract text content from the `<article>` or `<body>` tag of the URL.
 3.  **Extraction:** Sends the extracted text to Gemini via the Google AI Client SDK.
+    *   **Prompting for Parts:** The system instruction is updated to explicitly ask Gemini to identify and group steps into parts/sections if present in the source text.
     *   **Timeout Implementation:** The call to Gemini will be wrapped in a `withTimeout(30000)` block in the repository/datasource layer to ensure the app doesn't wait indefinitely.
 4.  **Structured Output:** The Generative Model is configured with `responseMimeType = "application/json"` to ensure a parseable JSON response.
 5.  **Image Fallback (P0):**
@@ -118,7 +134,7 @@ The database will consist of the following tables:
         2.  Schema.org `Recipe` image property.
         3.  First large image within the `<article>` tag.
     *   The identified URL is then set as the recipe's `imageUrl`.
-6.  **Persistence:** The JSON is parsed into the `Recipe` domain model and saves it to Room.
+6.  **Persistence:** The JSON is parsed into the `Recipe` domain model (including `RecipePart`s) and saves it to Room.
 
 ## 7. Key Features Implementation Details
 
@@ -128,14 +144,14 @@ Scaling logic resides in the `ScaleIngredientsUseCase`:
 This scaling is applied to both the main ingredient list in the Detail Screen and the step-specific ingredient lists in Cook Mode.
 
 ### 7.2 Preloaded Data
-The app populates the Room database with three P0 recipes. The `PreloadData` will be updated to include the mapping of ingredients to their respective steps.
+The app populates the Room database with three P0 recipes. The `PreloadData` will be updated to include the mapping of ingredients to their respective steps and group steps into parts.
 
 ### 7.3 Material You & Dynamic Coloring
 The app will use `dynamicLightColorScheme` and `dynamicDarkColorScheme` (API 31+) to adapt to the user's wallpaper.
 
 ## 8. Gemini Integration
 *   **Model:** Gemini 1.5 Flash (optimized for speed and structured output).
-*   **Prompting:** Strict system instructions to return JSON matching the app's internal schema.
+*   **Prompting:** Strict system instructions to return JSON matching the app's internal schema, specifically supporting the `parts` hierarchy.
 *   **API Key Management:** API key is retrieved via `BuildConfig` (populated by Secrets Gradle Plugin).
 
 ## 9. Error Handling

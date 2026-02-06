@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -154,18 +155,31 @@ fun RecipeDetailContent(
         item {
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "Instructions", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
-        items(recipe.steps) { step ->
-            Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                Text(text = "Step ${step.order}", style = MaterialTheme.typography.titleMedium)
-                Text(text = step.instruction)
-                if (step.stepIngredients.isNotEmpty()) {
+        recipe.parts.forEach { part ->
+            if (!part.title.isNullOrBlank() || recipe.parts.size > 1) {
+                item {
                     Text(
-                        text = "Ingredients: " + step.stepIngredients.joinToString { it.name },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
+                        text = if (!part.title.isNullOrBlank()) "Part ${part.order}: ${part.title}" else "Part ${part.order}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                }
+            }
+            items(part.steps) { step ->
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    Text(text = "Step ${step.order}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(text = step.instruction)
+                    if (step.stepIngredients.isNotEmpty()) {
+                        Text(
+                            text = "Ingredients: " + step.stepIngredients.joinToString { it.name },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
         }

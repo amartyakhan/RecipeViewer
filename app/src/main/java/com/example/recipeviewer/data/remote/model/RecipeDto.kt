@@ -10,6 +10,14 @@ data class RecipeDto(
     val cookTimeMinutes: Int = 0,
     val servings: Int = 1,
     val ingredients: List<IngredientDto>,
+    val parts: List<RecipePartDto> = emptyList(),
+    val steps: List<StepDto> = emptyList() // Fallback for old schema or if parts aren't used
+)
+
+@Serializable
+data class RecipePartDto(
+    val order: Int,
+    val title: String? = null,
     val steps: List<StepDto>
 )
 

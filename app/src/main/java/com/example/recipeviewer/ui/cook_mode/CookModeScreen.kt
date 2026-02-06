@@ -11,11 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -75,15 +71,39 @@ fun CookModeScreen(
     }
 }
 
+data class FlattenedStep(
+    val step: Step,
+    val partOrder: Int,
+    val partTitle: String?,
+    val totalParts: Int
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CookModeContent(recipe: Recipe) {
-    val pagerState = rememberPagerState(pageCount = { recipe.steps.size })
+    val flattenedSteps = remember(recipe) {
+        recipe.parts.flatMap { part ->
+            part.steps.map { step ->
+                FlattenedStep(
+                    step = step,
+                    partOrder = part.order,
+                    partTitle = part.title,
+                    totalParts = recipe.parts.size
+                )
+            }
+        }
+    }
+
+    val pagerState = rememberPagerState(pageCount = { flattenedSteps.size })
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         LinearProgressIndicator(
-            progress = { (pagerState.currentPage + 1).toFloat() / recipe.steps.size },
+            progress = { 
+                if (flattenedSteps.isNotEmpty()) {
+                    (pagerState.currentPage + 1).toFloat() / flattenedSteps.size
+                } else 0f
+            },
             modifier = Modifier.fillMaxWidth()
         )
         HorizontalPager(
@@ -91,7 +111,7 @@ private fun CookModeContent(recipe: Recipe) {
             modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
-            StepPage(step = recipe.steps[pageIndex])
+            StepPage(flattenedStep = flattenedSteps[pageIndex])
         }
 
         // Navigation Buttons
@@ -126,7 +146,7 @@ private fun CookModeContent(recipe: Recipe) {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     },
-                    enabled = pagerState.currentPage < recipe.steps.size - 1
+                    enabled = pagerState.currentPage < flattenedSteps.size - 1
                 ) {
                     Text("Next")
                     Spacer(Modifier.width(8.dp))
@@ -138,13 +158,29 @@ private fun CookModeContent(recipe: Recipe) {
 }
 
 @Composable
-private fun StepPage(step: Step) {
+private fun StepPage(flattenedStep: FlattenedStep) {
+    val step = flattenedStep.step
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        if (flattenedStep.totalParts > 1 || !flattenedStep.partTitle.isNullOrBlank()) {
+            val partText = if (!flattenedStep.partTitle.isNullOrBlank()) {
+                "Part ${flattenedStep.partOrder}: ${flattenedStep.partTitle}"
+            } else {
+                "Part ${flattenedStep.partOrder}"
+            }
+            Text(
+                text = partText,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
         Text(
             text = "Step ${step.order}",
             style = MaterialTheme.typography.labelLarge,

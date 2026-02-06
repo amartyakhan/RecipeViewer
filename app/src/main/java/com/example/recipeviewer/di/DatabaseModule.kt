@@ -48,9 +48,9 @@ object DatabaseModule {
                                 Log.d("DatabaseModule", "Populating database with preloaded data...")
                                 PreloadData.recipes.forEach { recipe ->
                                     val ingredients = PreloadData.ingredients.filter { it.recipeId == recipe.id }
-                                    val steps = PreloadData.steps.filter { it.recipeId == recipe.id }
+                                    val parts = PreloadData.recipeParts[recipe.id] ?: emptyList()
                                     val mappings = PreloadData.stepIngredientMappings[recipe.id] ?: emptyList()
-                                    dao.insertFullRecipe(recipe, ingredients, steps, mappings)
+                                    dao.insertFullRecipe(recipe, ingredients, parts, mappings)
                                 }
                                 Log.d("DatabaseModule", "Database population complete.")
                             }

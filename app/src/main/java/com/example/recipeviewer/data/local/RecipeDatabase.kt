@@ -3,19 +3,17 @@ package com.example.recipeviewer.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.recipeviewer.data.local.dao.RecipeDao
-import com.example.recipeviewer.data.local.model.IngredientEntity
-import com.example.recipeviewer.data.local.model.RecipeEntity
-import com.example.recipeviewer.data.local.model.StepEntity
-import com.example.recipeviewer.data.local.model.StepIngredientEntity
+import com.example.recipeviewer.data.local.model.*
 
 @Database(
     entities = [
         RecipeEntity::class,
         IngredientEntity::class,
+        RecipePartEntity::class,
         StepEntity::class,
         StepIngredientEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class RecipeDatabase : RoomDatabase() {

@@ -21,6 +21,13 @@ This document outlines the functional and non-functional requirements for the Re
         *   The app uses the **Google AI Client SDK for Android** to call a cloud-based Gemini model (e.g., Gemini 1.5 Flash) to parse the URL content.
         *   **Image URL Fallback (P0):** If Gemini fails to extract a valid image URL, the app should employ a fallback logic to identify a representative image URL from the website's content (e.g., OpenGraph tags or primary images) and associate it with the recipe.
     *   **Persistence:** The model returns structured JSON recipe data compatible with the app's schema, which is then stored in the local database.
+*   **P0 Recipe Structure - Parts & Steps:**
+    *   Many recipes have multiple stages, steps, or parts (e.g., "The Dough", "The Filling").
+    *   The app must support **Recipe Parts**.
+    *   Each part will have a serial number (Part 1, Part 2, etc.) and optionally a title.
+    *   Cooking steps are grouped under parts.
+    *   For recipes without explicit parts, a default single part will be used.
+    *   Steps within a part are sequential.
 *   **P0 Error Handling:** 
     *   Display specific **failure icons and messages** within the extraction popup based on the result or API response code.
     *   Example: 503 error should notify "Service not available".
@@ -55,7 +62,7 @@ This document outlines the functional and non-functional requirements for the Re
 *   **P0 (Must-Have):** Displayed when a user selects a recipe from the list.
 *   **P0 (Must-Have):** This screen shows:
     *   Full list of all ingredients and their quantities.
-    *   Full list of all cooking instructions/steps.
+    *   Full list of all cooking instructions/steps, **organized by Recipe Parts** (if applicable).
 *   **P0 (Must-Have):** Contains a "Start Cooking" button to launch the Cook Mode slideshow.
 *   **P0 (Must-Have):** Contains the "Delete" button for the recipe.
 
@@ -68,6 +75,7 @@ This document outlines the functional and non-functional requirements for the Re
         *   Tap to move forward to the next step (optional).
     *   **Content per step:**
         *   One instruction step.
+        *   **Part information:** Display the current Part title/number if the recipe has parts.
         *   **Exact quantities** of specific ingredients used in that step (dynamically scaled).
         *   Time duration for that specific step.
 *   **P1:** Simple visual timer for steps with a duration.

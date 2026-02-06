@@ -11,9 +11,19 @@ data class RecipeWithDetails(
     )
     val ingredients: List<IngredientEntity>,
     @Relation(
-        entity = StepEntity::class,
+        entity = RecipePartEntity::class,
         parentColumn = "id",
         entityColumn = "recipeId"
+    )
+    val parts: List<PartWithSteps>
+)
+
+data class PartWithSteps(
+    @Embedded val part: RecipePartEntity,
+    @Relation(
+        entity = StepEntity::class,
+        parentColumn = "id",
+        entityColumn = "partId"
     )
     val steps: List<StepWithIngredients>
 )

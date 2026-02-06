@@ -27,6 +27,12 @@ class RecipeExtractionDataSource @Inject constructor() {
         return runCatching {
             val prompt = """
                 You are a recipe extraction expert. Convert the following text into a structured JSON object representing a recipe.
+                Many recipes have multiple stages or steps or parts (e.g., "The Dough", "The Filling", "The Sauce"), which in turn contains the cooking steps. 
+                Support parts in the recipes. Each part will have a serial number (order), part one , part two etc. and optionally a title. 
+                Cooking steps are grouped under parts. 
+                If a recipe does not have clear parts, create a single default part with order 1 and no title.
+                Typically all steps under one part is captured sequentially.
+
                 The JSON must follow this exact structure:
                 {
                   "title": "Recipe Title",
@@ -37,13 +43,19 @@ class RecipeExtractionDataSource @Inject constructor() {
                   "ingredients": [
                     { "name": "Ingredient Name", "quantity": 1.0, "unit": "unit" }
                   ],
-                  "steps": [
+                  "parts": [
                     {
                       "order": 1,
-                      "instruction": "Step instruction",
-                      "durationMinutes": 0,
-                      "stepIngredients": [
-                        { "name": "Ingredient Name", "quantity": 1.0, "unit": "unit" }
+                      "title": "Part Title (Optional)",
+                      "steps": [
+                        {
+                          "order": 1,
+                          "instruction": "Step instruction",
+                          "durationMinutes": 0,
+                          "stepIngredients": [
+                            { "name": "Ingredient Name", "quantity": 1.0, "unit": "unit" }
+                          ]
+                        }
                       ]
                     }
                   ]

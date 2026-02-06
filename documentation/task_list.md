@@ -20,20 +20,22 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Define Room Entities:
     - [x] `RecipeEntity`
     - [x] `IngredientEntity` (Foreign key to Recipe)
-    - [x] `StepEntity` (Foreign key to Recipe)
+    - [ ] **Recipe Part Support:** `RecipePartEntity` (Foreign key to Recipe)
+    - [x] `StepEntity` (Foreign key to Recipe) -> *Update to include partId*
     - [x] `StepIngredientEntity` (Junction table for step-specific ingredients)
 - [x] Create Room DAOs for CRUD operations:
-    - [x] Insert recipe with ingredients and steps (Transaction).
+    - [ ] Update Transaction to include `RecipePartEntity` insertion.
     - [x] Support inserting and querying step-ingredient relationships.
     - [x] Query all recipes for list view.
-    - [x] Query full recipe details by ID.
+    - [x] Query full recipe details by ID (including parts).
     - [x] Delete recipe.
 - [x] Implement Room Database class and Hilt module for Database injection.
 
 ## 3. Domain Layer & Models (P0)
 - [x] Define Domain Models:
-    - [x] `Recipe`
+    - [x] `Recipe` -> *Update to include parts list*
     - [x] `Ingredient`
+    - [ ] `RecipePart`
     - [x] `Step`
 - [x] Define Repository Interfaces.
 - [x] Implement Use Cases:
@@ -57,7 +59,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Recipe header (Image, Title).
     - [x] Ingredient list with scaling support.
     - [x] Scaling selector (0.5x, 1x, 2x, 4x).
-    - [x] Instructions list.
+    - [ ] **Grouped Instructions:** Instructions list grouped by `RecipePart`.
     - [x] "Start Cooking" Floating Action Button.
     - [x] Delete option (Menu or Button).
 
@@ -65,6 +67,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
 - [x] Implement `CookModeViewModel`.
 - [x] Create `CookModeScreen` Composable:
     - [x] `HorizontalPager` for step-by-step navigation.
+    - [ ] **Part Info:** Display current Part number/title in the step page.
     - [x] Update `StepPage` to display specific ingredients for each step, dynamically scaled.
     - [x] Add explicit "Previous" and "Next" navigation buttons at the bottom using Material 3 styles.
 - [x] Implement "Keep Screen On" logic using `LocalView.current.keepScreenOn`.
@@ -76,7 +79,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Add URL validation logic.
     - [x] Add "Get Recipe" button that triggers the pipeline upon validation.
 - [x] **Scraping Pipeline (P0):** Integrate Jsoup to extract text content from the `<article>` or `<body>` tag of the provided URL.
-- [x] **LLM Extraction (P0):** Implement `RecipeExtractionDataSource` using `GenerativeModel` with `responseMimeType = "application/json"` and a structured schema.
+- [ ] **LLM Extraction (P0):** Update `RecipeExtractionDataSource` to identify and group steps into parts in the JSON response.
 - [x] **Image URL Fallback (P0):** If Gemini response lacks an image URL, use Jsoup to parse the original HTML for a suitable image (e.g., from OpenGraph tags).
 - [x] Implement Repository logic to map Gemini's JSON response to Domain Models and persist to Room (P0).
 - [x] **Loading & Feedback UI (P0):**
@@ -92,6 +95,7 @@ This document tracks the progress of P0 and P1 requirements implementation for t
     - [x] Fluffy Pancakes
     - [x] Spaghetti Bolognese
     - [x] Chocolate Chip Cookies
+- [ ] **Part Support:** Update `PreloadData` to group steps into parts.
 - [x] Map preloaded ingredients to their respective steps in `PreloadData`.
 - [x] Implement logic to prepopulate the Room database on first app launch.
 - [x] Verify image loading for preloaded recipes (using bundled assets or URLs).

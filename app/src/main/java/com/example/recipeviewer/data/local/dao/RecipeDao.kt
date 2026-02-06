@@ -1,11 +1,7 @@
 package com.example.recipeviewer.data.local.dao
 
 import androidx.room.*
-import com.example.recipeviewer.data.local.model.IngredientEntity
-import com.example.recipeviewer.data.local.model.RecipeEntity
-import com.example.recipeviewer.data.local.model.RecipeWithDetails
-import com.example.recipeviewer.data.local.model.StepEntity
-import com.example.recipeviewer.data.local.model.StepIngredientEntity
+import com.example.recipeviewer.data.local.model.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,6 +24,9 @@ interface RecipeDao {
     suspend fun insertIngredients(ingredients: List<IngredientEntity>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRecipeParts(parts: List<RecipePartEntity>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSteps(steps: List<StepEntity>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -37,22 +36,39 @@ interface RecipeDao {
     suspend fun insertFullRecipe(
         recipe: RecipeEntity,
         ingredients: List<IngredientEntity>,
-        steps: List<StepEntity>,
-        stepIngredientMappings: List<Pair<Int, Int>> = emptyList() // (stepIndex, ingredientIndex)
+        parts: List<RecipePartWithStepsEntities>,
+        stepIngredientMappings: List<StepIngredientMapping> = emptyList()
     ) {
         val recipeId = insertRecipe(recipe)
         val ingredientIds = insertIngredients(ingredients.map { it.copy(recipeId = recipeId) })
-        val stepIds = insertSteps(steps.map { it.copy(recipeId = recipeId) })
 
-        val mappings = stepIngredientMappings.map { (stepIdx, ingIdx) ->
-            StepIngredientEntity(
-                stepId = stepIds[stepIdx],
-                ingredientId = ingredientIds[ingIdx]
-            )
+        parts.forEachIndexed { partIdx, partWithSteps ->
+            val partId = insertRecipeParts(listOf(partWithSteps.part.copy(recipeId = recipeId))).first()
+            val stepIds = insertSteps(partWithSteps.steps.map { it.copy(recipeId = recipeId, partId = partId) })
+
+            val mappings = stepIngredientMappings
+                .filter { it.partIndex == partIdx }
+                .map { mapping ->
+                    StepIngredientEntity(
+                        stepId = stepIds[mapping.stepIndex],
+                        ingredientId = ingredientIds[mapping.ingredientIndex]
+                    )
+                }
+            insertStepIngredients(mappings)
         }
-        insertStepIngredients(mappings)
     }
 
     @Delete
     suspend fun deleteRecipe(recipe: RecipeEntity)
 }
+
+data class RecipePartWithStepsEntities(
+    val part: RecipePartEntity,
+    val steps: List<StepEntity>
+)
+
+data class StepIngredientMapping(
+    val partIndex: Int,
+    val stepIndex: Int,
+    val ingredientIndex: Int
+)
