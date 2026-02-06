@@ -60,7 +60,7 @@ class RecipeExtractionDataSource @Inject constructor() {
 
             Log.d("RecipeExtraction", "Calling Gemini API with prompt length: ${prompt.length}")
             
-            val response = withTimeout(30000) {
+            val response = withTimeout(120000) {
                 model.generateContent(prompt)
             }
 
